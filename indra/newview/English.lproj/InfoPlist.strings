@@ -1,0 +1,7 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "Firestorm";
+
+CFBundleShortVersionString = "Firestorm version 4.3.0.29864";
+CFBundleGetInfoString = "Firestorm version 4.3.0.29864, Copyright 2010-2011 The Phoenix Viewer Project, Inc.";
+

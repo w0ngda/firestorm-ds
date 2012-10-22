@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater_about" title="關於 [CAPITALIZED_APP_NAME]">
+	<floater.string name="AboutHeader">
+		[APP_NAME] [VIEWER_VERSION_0].[VIEWER_VERSION_1].[VIEWER_VERSION_2] ([VIEWER_VERSION_3]) [BUILD_DATE] [BUILD_TIME] ([CHANNEL])
+[[VIEWER_RELEASE_NOTES_URL] [ReleaseNotes]]
+	</floater.string>
+	<floater.string name="AboutCompiler">
+		Built with [COMPILER] version [COMPILER_VERSION]
+	</floater.string>
+	<floater.string name="AboutPosition">
+		You are at [POSITION_0,number,1], [POSITION_1,number,1], [POSITION_2,number,1] in [REGION] located at &lt;nolink&gt;[HOSTNAME]&lt;/nolink&gt; ([HOSTIP])
+[SERVER_VERSION]
+[SERVER_RELEASE_NOTES_URL]
+	</floater.string>
+	<floater.string name="AboutSystem">
+		CPU：[CPU]
+記憶體：[MEMORY_MB] MB
+作業系統版本：[OS_VERSION]
+顯示卡供應商：[GRAPHICS_CARD_VENDOR]
+顯示卡：[GRAPHICS_CARD]
+	</floater.string>
+	<floater.string name="AboutDriver">
+		Windows Graphics Driver Version: [GRAPHICS_DRIVER_VERSION]
+	</floater.string>
+	<floater.string name="AboutLibs">
+		OpenGL Version: [OPENGL_VERSION]
+
+libcurl 版本： [LIBCURL_VERSION]
+J2C 解碼器版本： [J2C_VERSION]
+音效驅動程式版本： [AUDIO_DRIVER_VERSION]
+Qt Webkit 版本： [QT_WEBKIT_VERSION]
+語音伺服器版本： [VOICE_VERSION]
+	</floater.string>
+	<floater.string name="none">
+		（無）
+	</floater.string>
+	<floater.string name="AboutTraffic">
+		封包損失：[PACKETS_LOST,number,0]/[PACKETS_IN,number,0] ([PACKETS_PCT,number,1]%)
+	</floater.string>
+	<tab_container name="about_tab">
+		<panel label="資訊" name="support_panel">
+			<text name="support_intro">    
+For the latest information about Firestorm, visit    
+    http://www.phoenixviewer.com
+    		</text>
+			<button label="覆製到剪貼簿" name="copy_btn"/>
+		</panel>
+		<panel label="Credits" name="credits_panel">
+		</panel>
+<!-- Firestorm Credits -->
+      <panel label="Firestorm" name="fs_credits_panel">      
+			<text name="firestorm_intro" height="100" >
+Firestorm is a community development project to improve the SecondLife(tm) Viewer experience.  We package contributions from various community developers along with code from Linden Lab and ourselves to bring you a quality, feature-rich viewer experience backed up by a large volunteer support team.  Firestorm is brought to you by The Phoenix Viewer Project, Inc., a non-profit organization.          
+          
+The Firestorm Development Team:
+     		 </text>
+      		<text name="fs_contrib_intro" >
+Additional code generously contributed to Firestorm by:
+      		</text>
+      		<text name="fs_support_intro" >
+Special thanks to our Firestorm Support Team, wiki editors, educators, and translators:
+      		</text>
+      		<text name="fs_art_intro" >
+Firestorm includes Starlight, modified for Firestorm.  It is provided by residents for residents, with the intention of provi ding an alternative, brighter, and hopefully easier to use interface.  For further details see &lt;nolink&gt;https://wiki.sec ondlife.com/wiki/Viewer_Skins/Starlight&lt;/nolink&gt;.
+
+UI Artists and Designers:
+      		</text>
+        </panel>
+		<panel label="Licenses" name="licenses_panel">
+		</panel>
+	</tab_container>
+</floater>

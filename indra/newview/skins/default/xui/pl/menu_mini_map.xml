@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu name="Popup">
+	<menu_item_call label="Zoom blisko" name="Zoom Close"/>
+	<menu_item_call label="Zoom średnio" name="Zoom Medium"/>
+	<menu_item_call label="Zoom daleko" name="Zoom Far"/>
+	<menu_item_call label="Zoom domyślny" name="Zoom Default"/>
+	<menu_item_check label="Obróć mapę" name="Rotate Map"/>
+	<menu_item_check label="Autocentrowanie" name="Auto Center"/>
+	<menu_item_check label="Pierścień zasięgu czatu" name="Chat Distance Ring"/>
+	<menu name="MarkAvatar" label="Oznacz...">
+		<menu_item_call label="Czerwony" name="MarkRed"/>
+		<menu_item_call label="Fioletowy" name="MarkPurple"/>
+		<menu_item_call label="Zielony" name="MarkGreen"/>
+		<menu_item_call label="Żółty" name="MarkYellow"/>
+		<menu_item_call label="Wyczyść" name="Clear Marks"/>
+	</menu>
+	<menu_item_call label="Kamera" name="Cam"/>
+	<menu_item_call label="Profil" name="Profile"/>
+	<menu_item_call label="Zacznij śledzić" name="Start Tracking"/>
+	<menu_item_call label="Przestań śledzić" name="Stop Tracking"/>
+	<menu_item_call label="Mapa Świata" name="World Map"/>
+</menu>

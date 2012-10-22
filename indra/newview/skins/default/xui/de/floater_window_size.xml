@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="window_size" title="FENSTERGRÖSSE">
+	<string name="resolution_format">
+		[RES_X] x [RES_Y]
+	</string>
+	<text name="windowsize_text">
+		Fenstergröße einstellen:
+	</text>
+	<combo_box name="window_size_combo" tool_tip="Breite x Höhe">
+	</combo_box>
+	<button label="Festlegen" name="set_btn"/>
+	<button label="Abbrechen" name="cancel_btn"/>
+</floater>

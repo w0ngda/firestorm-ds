@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="script panel">
+	<panel.string name="loading">
+		Cargando...
+	</panel.string>
+	<panel.string name="can_not_view">
+		No puedes ver ni editar este script, ya que ha sido configurado con permisos restringidos. Necesitas todos los permisos para ver o editar un script dentro de un objeto.
+	</panel.string>
+	<panel.string name="public_objects_can_not_run">
+		Los Objetos Públicos no pueden ejecutar scripts
+	</panel.string>
+	<panel.string name="script_running">
+		Ejecutándose
+	</panel.string>
+	<panel.string name="external_editor_not_set">
+		Selecciona un editor configurando la variable de entorno LL_SCRIPT_EDITOR o el valor ExternalEditor.
+	</panel.string>
+	<menu_bar name="script_menu">
+		<menu label="Archivo" name="File">
+			<menu_item_call label="Guardar" name="Save"/>
+			<menu_item_call label="Revertir cambios" name="Revert All Changes"/>
+			<menu_item_call label="Cargar de un archivo..." name="LoadFromFile"/>
+			<menu_item_call label="Salvar a un archivo..." name="SaveToFile"/>
+		</menu>
+		<menu label="Editar" name="Edit">
+			<menu_item_call label="Deshacer" name="Undo"/>
+			<menu_item_call label="Rehacer" name="Redo"/>
+			<menu_item_call label="Cortar" name="Cut"/>
+			<menu_item_call label="Copiar" name="Copy"/>
+			<menu_item_call label="Pegar" name="Paste"/>
+			<menu_item_call label="Seleccionar todo" name="Select All"/>
+			<menu_item_call label="Deshacer selección" name="Deselect"/>
+			<menu_item_call label="Buscar / Reemplazar..." name="Search / Replace..."/>
+		</menu>
+		<menu label="Ayuda" name="Help">
+			<menu_item_call label="Ayuda..." name="Help..."/>
+			<menu_item_call label="Ayuda de palabra reservada..." name="Keyword Help..."/>
+		</menu>
+	</menu_bar>
+	<tab_container name="Tabset">
+		<panel name="Script" label="Script">
+			<text_editor name="Script Editor">
+				Cargando...
+			</text_editor>
+		</panel>
+		<panel name="Preprocessed" label="Preprocesado">
+			<text_editor name="Post Editor">
+				Cargando...
+			</text_editor>
+		</panel>
+	</tab_container>
+	<combo_box label="Insertar..." name="Insert..."/>
+	<button label="Guardar" label_selected="Guardar" name="Save_btn" width="100"/>
+	<button label="Editar..." name="Edit_btn" width="100" right="381"/>
+	<check_box label="Convertir tabuladores en espacios" tool_tip="Si lo activas, al script recibido por el visor desde un editor externo se le reemplazarán automáticamente todos los tabuladores por el número de espacios por defecto (4, por norma general)." name="ExternalEditorConvertTabsToSpaces"/>
+</panel>

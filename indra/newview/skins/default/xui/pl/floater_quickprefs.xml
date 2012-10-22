@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="quickprefs" title="Szybkie strojenie">
+<panel name="quickprefs">
+        <text name="Draw Distance" tool_tip="Zmień swoje pole widzenia">
+            Pole widzenia:
+        </text>
+        <text name="Maximum bandwidth" tool_tip="Ustaw przepustowość swojej sieci w Kbps (kilobitach na sekundę)">
+            Maks. przepust.:
+        </text>
+        <text name="Particles" tool_tip="Ilość cząsteczek do renderowania">
+            Maks. cząstek:
+        </text>
+        <text name="Avatar Physics LOD" tool_tip="Kontroluj poziom detali (LOD) dla fizyki awatarów (np. fizykę piersi)">
+            LOD fiz. awat.:
+        </text>
+        <text name="LOD Factor" tool_tip="Kontroluj poziom detali (LOD) dla obiektów i prim (mnożnik dla bieżącego obszaru ekranu, gdy obliczony jest poziom szczegółowości) [wartość domyślna - zależy]">
+            Mnożnik LOD:
+        </text>
+        <text name="Max Avatars" tool_tip="Określ, ile awatarów ma być w pełni renderowanych na ekranie. Obniżenie tej wartości widocznie podnosi FPS w zatłoczonych miejscach. Wymaga, aby funkcja 'upraszczaj oddalone awatary' była włączona. [domyślnie 12]">
+            Maks. awatarów:
+        </text>
+        <text name="Height Offset" tool_tip="Użyj tego suwaka, aby do pewnego stopnia manipulować bryłami brzegowymi (bounding boxes) Twojego awatara. Przydatne, aby zmylić tzw. orbitery lub podnieść Cię w górę lub w dół bez zmiany kształtu.">
+            Dostrój wys.:
+        </text>
+        <text name="Tag Offset" tool_tip="Zmienia przesunięcie tagów (imion) awatarów w osi Z (w górę lub w dół). Domyślnie 0">
+            Pozycja tagów:
+        </text>
+        <text name="name_tags_textbox">
+            Tagi imion:
+        </text>
+        <text name="LookAt_Preferences_Label">
+            Cele spojrzeń:
+        </text>
+        <check_box name="showlookat" label="Włącz" tool_tip="Włącz celowniczki pokazujące gdzie patrzą inne osoby."/>
+        <text name="DebugShowColor_label">
+            Kolor pod kursorem:
+        </text>
+        <check_box name="Show_Color_Under_Cursor" label="Włączony" tool_tip="Pokazuj kolor pod kursorem myszki."/>
+        <radio_group name="Name_Tag_Preference">
+         <radio_item label="Włącz" name="radio"/>
+         <radio_item label="Wyłącz" name="radio2"/>
+        </radio_group>
+        <text name="WL Sky" tool_tip="Ustawienia systemu Windlight dla Twojego nieba">
+            Niebo WL:
+        </text>
+        <text name="WL Water" tool_tip="Ustawienia systemu Windlight dla Twojej wody">
+            Woda WL:
+        </text>
+        <icon name="SkyDayCycle" tool_tip="Zmień porę dnia"/>
+        <button name="UseRegionWL" tool_tip="Resetuj opcje systemu WindLight do domyślnych regionu"/>
+</panel>
+</floater>

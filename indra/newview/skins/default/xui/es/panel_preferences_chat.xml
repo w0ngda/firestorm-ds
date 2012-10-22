@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Chat de texto" name="chat">
+	<tab_container label="Prefs. Firestorm" name="tabs">
+		<panel label="General" name="ChatGeneral">
+			<text name="font_size" width="180">
+				Fuente de la ventana de chat:
+			</text>
+			<radio_group name="chat_font_size" top="16" left_delta="180">
+				<radio_item label="Pequeña" name="radio"/>
+				<radio_item label="Mediana" name="radio2" left_delta="75"/>
+				<radio_item label="Grande" name="radio3"/>
+				<radio_item label="Enorme" name="radio4"/>
+			</radio_group>
+			<text name="console_font_size" top="32" width="180">
+				Fuente de consola:
+			</text>
+			<radio_group name="chat_console_font_size" top="33" left_delta="180">
+				<radio_item label="Pequeña" name="consradio"/>
+				<radio_item label="Mediana" name="consradio2" left_delta="75"/>
+				<radio_item label="Grande" name="consradio3"/>
+				<radio_item label="Enorme" name="consradio4"/>
+			</radio_group>
+			<check_box label="Ejecutar la animación de escribir al hacerlo en el chat" name="play_typing_animation"/>
+			<check_box label="Ejecutar animaciones del avatar (como gritar)" name="play_avatar_animations"/>
+			<check_box label="Reproducir sonido de tecleo cuando alguien escribe en el chat local" name="play_typing_sound"/>
+			<check_box label="Enviar notificación de escritura a otros avatares durante las sesiones de MI" name="FSSendTypingState"/>
+			<check_box name="FSChatbarGestureAutoCompleteEnable" label="Activar el autocompletado de los gestos en la barra de chat local"/>
+			<check_box label="Cuando estoy desconectado, enviarme los MI al correo electrónico ([EMAIL])" name="send_im_to_email"/>
+			<check_box label="No usar cabeceras de chat (usar estilo V1)" name="plain_text_chat_history"/>
+			<check_box label="Al usar cabeceras de chat, mostrar mini-iconos" name="ShowChatMiniIcons"/>
+			<check_box label="Mostrar el chat en bocadillos sobre los avatares" name="bubble_text_chat"/>
+			<check_box label="Mostrar indicador de escritura en bocadillos sobre los avatares" name="bubble_text_typing"/>
+			<text name="inworld_typing_rg_label" width="157">
+				Pulsar teclas alfanuméricas...
+			</text>
+			<radio_group name="inworld_typing_preference" top_delta="0" left_pad="5">
+				<radio_item label="Inicia chat local" name="radio_start_chat" width="110"/>
+				<radio_item label="Afecta al movimiento (p. ej. WASD)" name="radio_move" left="115"/>
+			</radio_group>
+			<check_box label="Permitir el historial de MI y chat en texto sin formato" name="plain_text_chat_history"/>
+			<check_box label="Bocadillos del chat" name="bubble_text_chat"/>
+			<text name="show_ims_in_label">
+				Mostrar los MI en:
+			</text>
+			<radio_group name="chat_window" tool_tip="Muestra tus mensajes instantáneos en ventanas independientes o agrupados en una sola con varias pestañas (requiere reiniciar)" top_delta="1" width="195">
+				<radio_item label="Ventanas distintas" name="radio"/>
+				<radio_item label="Pestañas" name="radio2"/>
+			</radio_group>
+			<text name="req_restart_ims" top_delta="-1">
+				(requiere reiniciar)
+			</text>
+			<text name="tab_direction_label" width="110">
+				Pestañas del chat:
+			</text>
+			<radio_group name="chat_tab_direction"
+             tool_tip="Cambia la disposición de las pestañas del chat/IM entre horizontales y verticales cuando se usa el modo de una sola ventana con pestañas (requiere reinciar)" top_delta="-1" width="195">
+				<radio_item label="Horizontales" name="radio_horizontal" width="100"/>
+				<radio_item label="Verticales" name="radio_vertical" width="100"/>
+			</radio_group>
+			<text name="req_restart_chattabs" top_delta="1">
+				(requiere reiniciar)
+			</text>
+			<button label="Configuración de traducción de chat" name="translation_settings_btn" top_delta="25" width="210"/>
+		</panel>
+		<panel label="Notificaciones" name="ChatNotifications">
+			<text name="disable_toast_label">
+				Permitir ventanas de chat emergentes:
+			</text>
+			<check_box label="Chats de grupo" name="EnableGroupChatPopups" tool_tip="Activa esta casilla para ver una ventana emergente cada vez que recibas un mensaje de un chat de grupo"/>
+			<check_box label="Chats de MI" name="EnableIMChatPopups" tool_tip="Activa esta casilla para ver una ventana emergente cada vez que recibas un mensaje instantáneo"/>
+			<check_box name="FSUseNearbyChatConsole" label="Usar la consola para los mensajes de chat en vez de &quot;tostadas&quot; (estilo Viewer 1.x)"/>
+			<check_box name="FSLogImToChatConsole" label="Mostrar los MI y los chats de grupo en consola"/>
+			<text name="FSShowGroupNameLength_label" width="380">
+				Longitud del nombre del grupo a mostrar en el historial de chat
+			</text>
+			<spinner tool_tip="-1 para mostrar el nombre completo, 0 para no mostrar" name="FSShowGroupNameLength" width="45"/>
+			<check_box name="FSShowIMInChatHistory" label="Mostrar MIs en la ventana de chat local"/>
+			<check_box name="FSLogIMInChatHistory" label="Guardar MIs en el chat local" width="180"/>
+			<text name="requires_save_chat_logs" width="230" top_delta="1">
+				(requiere activar el registro de chat local)
+			</text>
+			<text name="FSIMChatHistoryFade_label" width="380">
+				Fundir el texto de MI con el fondo de la ventana de historial de chat
+			</text>
+			<spinner tool_tip="0.0-1.0, 0 para fundido máximo, 1 para no fundir" name="FSIMChatHistoryFade"/>
+			<check_box name="FSAnnounceIncomingIM" label="Anunciar MI entrante tan pronto como el remitente empiece a escribir"/>
+			<check_box name="FSIMChatFlashOnFriendStatusChange" label="Hacer parpadear las pestañas de MI cuando tus contactos conecten o desconecten"/>
+		</panel>
+		<panel label="Firestorm" name="ChatFirestorm">
+			<text name="chat_and_im_enhancements">
+				Mejoras de chat y MI:
+			</text>
+			<check_box name="AllowMUpose" label="Usar &quot;:&quot; como sinónimo de &quot;/me&quot;"/>
+			<check_box name="EmotesUseItalic" label="Narraciones en cursiva" left_delta="210"/>
+			<check_box name="AutoCloseOOC" label="Auto-cerrar paréntesis ((OOC))"/>
+			<check_box name="FSNearbyChatbar" label="Añadir una barra de chat a la ventana de chat local" width="310"/>
+			<check_box name="FSShowChatChannel" label="Mostrar selector de canal en la barra de chat"/>
+			<check_box label="Ocultar automáticamente la barra de chat principal" name="AutohideChatBar" tool_tip="Oculta la barra de chat de la barra de botones inferior y sólo la muestra superpuesta cuando es necesaria."/>
+			<check_box label="Deseleccionar el chat tras enviar cada mensaje" name="CloseChatOnReturn"/>
+			<check_box name="FSMarkObjects" label="Marcar objetos con (sin nombre) cuando hablan para evitar suplantaciones"/>
+			<text name="group_enhancements">
+				Chat de grupo:
+			</text>
+			<check_box name="FSHighlightGroupMods" label="Resaltar los mensajes de los moderadores de grupo"/>
+			<text name="Moderator Name Style">
+				Nombres:
+			</text>
+			<combo_box name="mod_name_style">
+				<combo_box.item label="Normal" name="normal"/>
+				<combo_box.item label="Negrita" name="BOLD"/>
+				<combo_box.item label="Cursiva" name="ITALIC"/>
+				<combo_box.item label="Negrita y cursiva" name="BOLDITALIC"/>
+				<combo_box.item label="Subrayado" name="UNDERLINE"/>            
+				<combo_box.item label="Negrita y subrayado" name="BOLDUNDERLINE"/>
+				<combo_box.item label="Cursiva y subrayado" name="ITALICUNDERLINE"/>
+				<combo_box.item label="Negrita, cursiva y subrayado" name="BOLDITALICUNDERLINE"/>
+			</combo_box>
+			<text name="Moderator Text Style">
+				Mensajes:
+			</text>
+			<combo_box name="mod_text_style">
+				<combo_box.item label="Normal" name="normal"/>
+				<combo_box.item label="Negrita" name="BOLD"/>
+				<combo_box.item label="Cursiva" name="ITALIC"/>
+				<combo_box.item label="Negrita y cursiva" name="BOLDITALIC"/>
+				<combo_box.item label="Subrayado" name="UNDERLINE"/>            
+				<combo_box.item label="Negrita y subrayado" name="BOLDUNDERLINE"/>
+				<combo_box.item label="Cursiva y subrayado" name="ITALICUNDERLINE"/>
+				<combo_box.item label="Negrita, cursiva y subrayado" name="BOLDITALICUNDERLINE"/>
+			</combo_box>
+			<check_box name="FSMuteAllGroups" label="Desactivar TODOS los chats de grupo"/>
+			<check_box name="FSMuteGroupWhenNoticesDisabled" label="Cuando 'Recibir avisos del grupo' está desactivado, desactivar también el chat del grupo" left="30"/>
+			<text name="logging_enhancements">
+				Extras del registro de chat:
+			</text>
+			<check_box label="Ocultar fecha y hora en el chat local" name="hide_timestamps_nearby_chat"/>
+			<check_box label="Ocultar fecha y hora en los MIs" name="hide_timestamps_im"/>
+			<text name="console_enhancements">
+				Consola:
+			</text>
+			<check_box name="FSConsoleClassicDrawMode" label="Dibujar consola al modo clásico" tool_tip="El modo clásico dibuja el fondo de la consola como un único bloque para todas las líneas, con la anchura de la línea más larga."/>
+			<check_box name="ChatFullWidth" label="Usar todo el ancho de la pantalla como consola" width="290"/>
+			<text name="requires_restart_label2" top_delta="1">
+				(requiere reiniciar)
+			</text>
+			<spinner label="El chat se desvanece tras:" name="fade_chat_time" label_width="145" width="185"/>
+			<text name="text_box4">
+				(segundos)
+			</text>
+			<spinner name="max_chat_count"/>
+			<text name="text_box5">
+				(líneas)
+			</text>
+		</panel>
+		<panel label="Radar" name="ChatRadar">
+			<check_box name="reportChatRangeEnter" label="El radar avisa cuando alguien entra en el alcance del chat"/>
+			<check_box name="reportChatRangeLeave" label="El radar avisa cuando alguien sale del alcance del chat"/>
+			<check_box name="reportDrawRangeEnter" label="El radar avisa cuando alguien entra en tu distancia de dibujo"/>
+			<check_box name="reportDrawRangeLeaave" label="El radar avisa cuando alguien sale de tu distancia de dibujo"/>
+			<check_box name="RadarReportSimRangeEnter" label="El radar avisa cuando alguien entra en la región"/>
+			<check_box name="RadarReportSimRangeLeave" label="El radar avisa cuando alguien sale de la región"/>
+			<check_box name="RadarEnterChannelAlert" label="Reportar a los scripts los que entran en la región"/>
+			<check_box name="RadarLeaveChannelAlert" label="Reportar a los scripts los que salen de la región"/>
+		</panel>
+		<panel label="Alertas de chat" name="ChatKeywordAlerts">
+			<check_box name="FSKeywordOn" label="Activar alertas de chat"/>
+			<check_box name="FSKeywordInChat" label="Buscar palabras clave en el chat local"/>
+			<check_box name="FSKeywordInIM" label="Buscar palabras clave en MIs y chats de grupo"/>
+			<text name="textFSKeywords">
+				Palabras clave (separadas por comas):
+			</text>
+			<check_box name="FSKeywordChangeColor" label="Colorear alertas"/>
+			<color_swatch name="colorswatch" tool_tip="Pulsa para abrir el selector de color"/>
+			<check_box name="FSKeywordPlaySound" label="Reproducir sonido de alerta"/>
+			<text name="textFSKeywordSound">
+				UUID del sonido:
+			</text>
+		</panel>
+		<panel label="Entrada de texto" name="ChatTextInput">
+			<check_box label="Activar corrección ortográfica" name="checkSpellCheck" left="20" width="190"/>
+			<text name="textDictionaryMain" width="113" left_pad="10" top_pad="-17">
+				Diccionario principal:
+			</text>
+			<combo_box left_pad="5" name="comboDictionaryMain"/>
+			<check_box label="Activar autocorreción" name="lgg_ac_enable" tool_tip="Debes marcar esta casilla para usar cualquiera de estas configuraciones. La autocorreción buscará en tu escritura y sustituirá las entradas configuradas por su texto de reemplazo" left="20"/>
+			<button name="lgg_ac_showgui" label="Configuración de autocorreción" width="200"/>
+		</panel>
+	</tab_container>
+</panel>
