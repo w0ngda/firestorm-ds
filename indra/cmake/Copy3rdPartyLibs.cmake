@@ -217,12 +217,12 @@ elseif(DARWIN)
         libexpat.1.5.2.dylib
         libexpat.dylib
         libGLOD.dylib
-    libllqtwebkit.dylib
-    libminizip.a
+        libllqtwebkit.dylib
+        libminizip.a
         libndofdev.dylib
-        libhunspell-1.3.dylib
+        libhunspell-1.3.0.dylib
         libexception_handler.dylib
-    libcollada14dom.dylib
+        libcollada14dom.dylib
         #libgrowl.dylib # *TODO - test/fix/get mac growl working
        )
 
@@ -264,14 +264,15 @@ elseif(LINUX)
         libdb-5.1.so
         libexpat.so
         libexpat.so.1
-    libglod.so
+        libglod.so
         libgmock_main.so
         libgmock.so.0
         libgmodule-2.0.so
         libgobject-2.0.so
         libgtest_main.so
         libgtest.so.0
-    libminizip.so
+        libhunspell-1.3.so.0.0.0
+        libminizip.so
         libopenal.so
         libopenjpeg.so
         libssl.so

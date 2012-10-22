@@ -627,9 +627,9 @@ protected:
 
 	void showInfoCtrl()
 	{
-//		if (mAvatarID.isNull() || mFrom.empty() || SYSTEM_FROM == mFrom) return;
+//		if (mAvatarID.isNull() || mFrom.empty() || CHAT_SOURCE_SYSTEM == mSourceType) return;
 // [RLVa:KB] - Checked: 2010-04-22 (RLVa-1.2.2a) | Added: RLVa-1.2.0f
-		if ( (!mShowInfoCtrl) || (mAvatarID.isNull() || mFrom.empty() || SYSTEM_FROM == mFrom) ) return;
+		if ( (!mShowInfoCtrl) || (mAvatarID.isNull() || mFrom.empty() || CHAT_SOURCE_SYSTEM == mSourceType) ) return;
 // [/RLVa:KB]
 				
 		if (!sInfoCtrl)
@@ -834,6 +834,8 @@ void LLChatHistory::clear()
 	mLastFromID = LLUUID::null;
 }
 
+static LLFastTimer::DeclareTimer FTM_APPEND_MESSAGE("Append Chat Message");
+
 void LLChatHistory::onAvatarNameCache(const LLUUID& agent_id, const LLAvatarName& av_name)
 {
 	mDisplayName = av_name.mDisplayName;
@@ -842,6 +844,7 @@ void LLChatHistory::onAvatarNameCache(const LLUUID& agent_id, const LLAvatarName
 
 void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LLStyle::Params& input_append_params)
 {
+	LLFastTimer _(FTM_APPEND_MESSAGE);
 	bool use_plain_text_chat_history = args["use_plain_text_chat_history"].asBoolean();
 	bool hide_timestamps_nearby_chat = args["hide_timestamps_nearby_chat"].asBoolean();
 	// AO: Do any display name lookups in plaintext chat headers as early as possible to give the cache maximal 
@@ -928,7 +931,7 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 	// FS:LO FIRE-2899 - Faded text for IMs in nearby chat
 
 	//IRC styled /me messages.
-	bool irc_me = prefix == "/me " || prefix == "/me'";
+	bool irc_me = prefix == "/me " || prefix == "/me'" || prefix == "/ME " || prefix == "/ME'";
 
 	// Delimiter after a name in header copy/past and in plain text mode
 	std::string delimiter = ": ";
@@ -1075,7 +1078,7 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 	//</FS:HG> FS-1734 seperate name and text styles for moderator
 
 	if (use_plain_text_chat_history)
-	{		
+	{
 		LLStyle::Params timestamp_style(style_params);
 		if (!message_from_log)
 		{
@@ -1087,17 +1090,17 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 			{
 				timestamp_style.font.style(moderator_name_style);
 			}
-			//</FS:HG> FS-1734 seperate name and text styles for moderator			
+			//</FS:HG> FS-1734 seperate name and text styles for moderator
 		}
         	// [FIRE-1641 : SJ]: Option to hide timestamps in nearby chat - only add timestamps when hide_timestamps_nearby_chat not TRUE
-		// mEditor->appendText("[" + chat.mTimeStr + "] ", mEditor->getText().size() != 0, timestamp_style);
+		// mEditor->appendText("[" + chat.mTimeStr + "] ", mEditor->getLength() != 0, timestamp_style);
 		if (!hide_timestamps_nearby_chat)
 		{
-		   mEditor->appendText("[" + chat.mTimeStr + "] ", mEditor->getText().size() != 0, timestamp_style);
+			mEditor->appendText("[" + chat.mTimeStr + "] ", mEditor->getLength() != 0, timestamp_style);
 		}
 		else
 		{
-		   mEditor->appendLineBreakSegment(timestamp_style);
+			mEditor->appendLineBreakSegment(timestamp_style);
 		}
 
 		if (utf8str_trim(chat.mFromName).size() != 0)
@@ -1276,7 +1279,7 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 			style_params.color(txt_color);
 			style_params.readonly_color(txt_color);
 			
-			if (mEditor->getText().size() == 0)
+			if (mEditor->getLength() == 0)
 				p.top_pad = 0;
 			else
 				p.top_pad = mTopHeaderPad;
@@ -1389,6 +1392,16 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 			message = chat.mFromName + message;
 		}
 
+		// <FS:Ansariel> Optional muted chat history
+		if (chat.mMuted)
+		{
+			LLUIColor muted_text_color = LLUIColorTable::instance().getColor("ChatHistoryMutedTextColor");
+			style_params.color = muted_text_color;
+			style_params.readonly_color = muted_text_color;
+			style_params.selected_color = muted_text_color;
+		}
+		// </FS:Ansariel> Optional muted chat history
+
 		// FS:LO FIRE-2899 - Faded text for IMs in nearby chat
 		// FS:LO FIRE-5230 - Chat Console Improvement: Replacing the "IM" in front of group chat messages with the actual group name
 		//if(chat.mChatType == CHAT_TYPE_IM)
@@ -1399,6 +1412,16 @@ void LLChatHistory::appendMessage(const LLChat& chat, const LLSD &args, const LL
 			style_params.selected_color.alpha = FSIMChatHistoryFade;
 		}
 		// FS:LO FIRE-2899 - Faded text for IMs in nearby chat
+
+		// <FS:PP> FIRE-7625: Option to display group chats, IM sessions and nearby chat always in uppercase
+		static LLCachedControl<bool> sFSChatsUppercase(gSavedSettings, "FSChatsUppercase");
+		if (sFSChatsUppercase)
+		{
+			LLStringUtil::toUpper(message);
+			LLStringUtil::toUpper(mLastFromName);
+		}
+		// </FS:PP>
+
 		mEditor->appendText(message, FALSE, style_params);
 	}
 

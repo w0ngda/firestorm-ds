@@ -722,7 +722,6 @@
             </text>
             <radio_group
              control_name="RenderTerrainDetail"
-             draw_border="false"
              height="38"
              layout="topleft"
              left_delta="0"
@@ -910,11 +909,11 @@
          follows="left|top"
          height="12"
          layout="topleft"
-         left_pad="10"
+         left_pad="5"
          name="brightness text"
          top_delta="2"
          width="385">
-            (0 = default brightness, lower = brighter)
+            (0/1.0 = default brightness, lower = brighter)
         </text>
         <slider
          control_name="TextureMemory"
@@ -1130,7 +1129,7 @@
 		can_edit_text="false"
 		height="16"
 		increment="1"
-		initial_val="160"
+		initial_value="160"
 		label="Strength:"
 		tool_tip="Glow strength. Higher = wider and smoother (default is 2) "
 		label_width="50"

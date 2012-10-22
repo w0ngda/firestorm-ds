@@ -41,6 +41,7 @@
 #include "llstartup.h"
 #include "llviewerparcelmgr.h"
 #include "llparcel.h"
+#include "llviewermessage.h"
 
 /////////////////////////////////////////////////////////
 
@@ -49,15 +50,22 @@ LLViewerAudio::LLViewerAudio() :
 	mFadeState(FADE_IDLE),
 	mFadeTime(),
     mIdleListnerActive(false),
-	mForcedTeleportFade(false)
+	mForcedTeleportFade(false),
+	mWasPlaying(false)
 {
 	mTeleportFailedConnection = LLViewerParcelMgr::getInstance()->
 		setTeleportFailedCallback(boost::bind(&LLViewerAudio::onTeleportFailed, this));
+	mTeleportFinishedConnection = LLViewerParcelMgr::getInstance()->
+		setTeleportFinishedCallback(boost::bind(&LLViewerAudio::onTeleportFinished, this, _1, _2));
+	mTeleportStartedConnection = LLViewerMessage::getInstance()->
+		setTeleportStartedCallback(boost::bind(&LLViewerAudio::onTeleportStarted, this));
 }
 
 LLViewerAudio::~LLViewerAudio()
 {
 	mTeleportFailedConnection.disconnect();
+	mTeleportFinishedConnection.disconnect();
+	mTeleportStartedConnection.disconnect();
 }
 
 void LLViewerAudio::registerIdleListener()
@@ -67,7 +75,6 @@ void LLViewerAudio::registerIdleListener()
 		mIdleListnerActive = true;
 		doOnIdleRepeating(boost::bind(boost::bind(&LLViewerAudio::onIdleUpdate, this)));
 	}
-
 }
 
 void LLViewerAudio::startInternetStreamWithAutoFade(std::string streamURI)
@@ -80,6 +87,14 @@ void LLViewerAudio::startInternetStreamWithAutoFade(std::string streamURI)
 
 	// Record the URI we are going to be switching to	
 	mNextStreamURI = streamURI;
+
+	// <FS:Ansariel> Optional audio stream fading
+	if (!gSavedSettings.getBOOL("FSFadeAudioStream"))
+	{
+		gAudiop->startInternetStream(mNextStreamURI);
+		return;
+	}
+	// </FS:Ansariel>
 
 	switch (mFadeState)
 	{
@@ -180,6 +195,15 @@ bool LLViewerAudio::onIdleUpdate()
 
 void LLViewerAudio::stopInternetStreamWithAutoFade()
 {
+	// <FS:Ansariel> Optional audio stream fading
+	if (!gSavedSettings.getBOOL("FSFadeAudioStream"))
+	{
+		mNextStreamURI = LLStringUtil::null;
+		gAudiop->stopInternetStream();
+		return;
+	}
+	// </FS:Ansariel>
+
 	mFadeState = FADE_IDLE;
 	mNextStreamURI = LLStringUtil::null;
 	mDone = true;
@@ -190,8 +214,12 @@ void LLViewerAudio::stopInternetStreamWithAutoFade()
 
 void LLViewerAudio::startFading()
 {
-	const F32 AUDIO_MUSIC_FADE_IN_TIME = 3.0f;
-	const F32 AUDIO_MUSIC_FADE_OUT_TIME = 2.0f;
+	// <FS:Ansariel> Make fadint time configurable again
+	//const F32 AUDIO_MUSIC_FADE_IN_TIME = 3.0f;
+	//const F32 AUDIO_MUSIC_FADE_OUT_TIME = 2.0f;
+	F32 AUDIO_MUSIC_FADE_IN_TIME = gSavedSettings.getF32("FSAudioMusicFadeIn");
+	F32 AUDIO_MUSIC_FADE_OUT_TIME = gSavedSettings.getF32("FSAudioMusicFadeOut");
+	// </FS:Ansariel>
 	// This minimum fade time prevents divide by zero and negative times
 	const F32 AUDIO_MUSIC_MINIMUM_FADE_TIME = 0.01f;
 
@@ -245,16 +273,62 @@ F32 LLViewerAudio::getFadeVolume()
 	return fade_volume;
 }
 
+void LLViewerAudio::onTeleportStarted()
+{
+	if (!LLViewerAudio::getInstance()->getForcedTeleportFade())
+	{
+		// Even though the music was turned off it was starting up (with autoplay disabled) occasionally
+		// after a failed teleport or after an intra-parcel teleport.  Also, the music sometimes was not
+		// restarting after a successful intra-parcel teleport. Setting mWasPlaying fixes these issues.
+		LLViewerAudio::getInstance()->setWasPlaying(!gAudiop->getInternetStreamURL().empty());
+		
+		// <FS:Ansariel> Optional audio stream fading
+		if (!gSavedSettings.getBOOL("FSFadeAudioStream"))
+		{
+			return;
+		}
+		// </FS:Ansariel>
+		
+		LLViewerAudio::getInstance()->setForcedTeleportFade(true);
+		LLViewerAudio::getInstance()->startInternetStreamWithAutoFade(LLStringUtil::null);
+		LLViewerAudio::getInstance()->setNextStreamURI(LLStringUtil::null);
+	}
+}
+
 void LLViewerAudio::onTeleportFailed()
 {
-	if (gAudiop)
+	// Calling audio_update_volume makes sure that the music stream is properly set to be restored to
+	// its previous value
+	audio_update_volume(false);
+
+	if (gAudiop && mWasPlaying)
 	{
 		LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
 		if (parcel)
 		{
 			mNextStreamURI = parcel->getMusicURL();
+			llinfos << "Teleport failed -- setting music stream to " << mNextStreamURI << llendl;
 		}
 	}
+	mWasPlaying = false;
+}
+
+void LLViewerAudio::onTeleportFinished(const LLVector3d& pos, const bool& local)
+{
+	// Calling audio_update_volume makes sure that the music stream is properly set to be restored to
+	// its previous value
+	audio_update_volume(false);
+
+	if (gAudiop && local && mWasPlaying)
+	{
+		LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
+		if (parcel)
+		{
+			mNextStreamURI = parcel->getMusicURL();
+			llinfos << "Intraparcel teleport -- setting music stream to " << mNextStreamURI << llendl;
+		}
+	}
+	mWasPlaying = false;
 }
 
 void init_audio() 
@@ -299,6 +373,7 @@ void init_audio()
 		gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndObjectDelete")));
 		gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndObjectRezIn")));
 		gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndObjectRezOut")));
+		gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndRegionRestart")));
 		gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndSnapshot")));
 		//gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndStartAutopilot")));
 		//gAudiop->preloadSound(LLUUID(gSavedSettings.getString("UISndStartFollowpilot")));
@@ -361,31 +436,49 @@ void audio_update_volume(bool force_update)
 		}
 
 		// handle secondary gains
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_SFX,
+		//						  gSavedSettings.getBOOL("MuteSounds") ? 0.f : gSavedSettings.getF32("AudioLevelSFX"));
+		//gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_UI,
+		//						  gSavedSettings.getBOOL("MuteUI") ? 0.f : gSavedSettings.getF32("AudioLevelUI"));
+		//gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_AMBIENT,
+		//						  gSavedSettings.getBOOL("MuteAmbient") ? 0.f : gSavedSettings.getF32("AudioLevelAmbient"));
+
+		static LLCachedControl<bool> muteSounds(gSavedSettings, "MuteSounds");
+		static LLCachedControl<bool> muteUI(gSavedSettings, "MuteUI");
+		static LLCachedControl<bool> muteAmbient(gSavedSettings, "MuteAmbient");
+		static LLCachedControl<F32> audioLevelSFX(gSavedSettings, "AudioLevelSFX");
+		static LLCachedControl<F32> audioLevelUI(gSavedSettings, "AudioLevelUI");
+		static LLCachedControl<F32> audioLevelAmbient(gSavedSettings, "AudioLevelAmbient");
+
 		gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_SFX,
-								  gSavedSettings.getBOOL("MuteSounds") ? 0.f : gSavedSettings.getF32("AudioLevelSFX"));
+								  muteSounds ? 0.f : (F32)audioLevelSFX);
 		gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_UI,
-								  gSavedSettings.getBOOL("MuteUI") ? 0.f : gSavedSettings.getF32("AudioLevelUI"));
+								  muteUI ? 0.f : (F32)audioLevelUI);
 		gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_AMBIENT,
-								  gSavedSettings.getBOOL("MuteAmbient") ? 0.f : gSavedSettings.getF32("AudioLevelAmbient"));
+								  muteAmbient ? 0.f : (F32)audioLevelAmbient);
+
+		// <FS:Ansariel>
 	}
 
 	// Streaming Music
 	if (gAudiop) 
 	{
-		if (progress_view_visible  && !LLViewerAudio::getInstance()->getForcedTeleportFade())
+		if (!progress_view_visible && LLViewerAudio::getInstance()->getForcedTeleportFade())
 		{
-			LLViewerAudio::getInstance()->setForcedTeleportFade(true);
-			LLViewerAudio::getInstance()->startInternetStreamWithAutoFade(LLStringUtil::null);
-			LLViewerAudio::getInstance()->setNextStreamURI(LLStringUtil::null);
-		}
-
-		if (!progress_view_visible && LLViewerAudio::getInstance()->getForcedTeleportFade() == true)
-		{
+			LLViewerAudio::getInstance()->setWasPlaying(!gAudiop->getInternetStreamURL().empty());
 			LLViewerAudio::getInstance()->setForcedTeleportFade(false);
 		}
 
-		F32 music_volume = gSavedSettings.getF32("AudioLevelMusic");
-		BOOL music_muted = gSavedSettings.getBOOL("MuteMusic");
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//F32 music_volume = gSavedSettings.getF32("AudioLevelMusic");
+		//BOOL music_muted = gSavedSettings.getBOOL("MuteMusic");
+
+		static LLCachedControl<F32> audioLevelMusic(gSavedSettings, "AudioLevelMusic");
+		static LLCachedControl<bool> muteMusic(gSavedSettings, "MuteMusic");
+		F32 music_volume = (F32)audioLevelMusic;
+		BOOL music_muted = (BOOL)muteMusic;
+		// </FS:Ansariel>
 		F32 fade_volume = LLViewerAudio::getInstance()->getFadeVolume();
 
 		music_volume = mute_volume * master_volume * music_volume * fade_volume;
@@ -393,21 +486,44 @@ void audio_update_volume(bool force_update)
 	}
 
 	// Streaming Media
-	F32 media_volume = gSavedSettings.getF32("AudioLevelMedia");
-	BOOL media_muted = gSavedSettings.getBOOL("MuteMedia");
+	// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+	//F32 media_volume = gSavedSettings.getF32("AudioLevelMedia");
+	//BOOL media_muted = gSavedSettings.getBOOL("MuteMedia");
+
+	static LLCachedControl<F32> audioLevelMedia(gSavedSettings, "AudioLevelMedia");
+	static LLCachedControl<bool> muteMedia(gSavedSettings, "MuteMedia");
+	F32 media_volume = (F32)audioLevelMedia;
+	BOOL media_muted = (BOOL)muteMedia;
+	// </FS:Ansariel>
 	media_volume = mute_volume * master_volume * media_volume;
 	LLViewerMedia::setVolume( media_muted ? 0.0f : media_volume );
 
 	// Voice
 	if (LLVoiceClient::getInstance())
 	{
-		F32 voice_volume = gSavedSettings.getF32("AudioLevelVoice");
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//F32 voice_volume = gSavedSettings.getF32("AudioLevelVoice");
+		static LLCachedControl<F32> audioLevelVoice(gSavedSettings, "AudioLevelVoice");
+		F32 voice_volume = (F32)audioLevelVoice;
+		// </FS:Ansariel>
 		voice_volume = mute_volume * master_volume * voice_volume;
-		BOOL voice_mute = gSavedSettings.getBOOL("MuteVoice");
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//BOOL voice_mute = gSavedSettings.getBOOL("MuteVoice");
+		static LLCachedControl<bool> muteVoice(gSavedSettings, "MuteVoice");
+		BOOL voice_mute = (BOOL)muteVoice;
+		// </FS:Ansariel>
 		LLVoiceClient::getInstance()->setVoiceVolume(voice_mute ? 0.f : voice_volume);
-		LLVoiceClient::getInstance()->setMicGain(voice_mute ? 0.f : gSavedSettings.getF32("AudioLevelMic"));
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//LLVoiceClient::getInstance()->setMicGain(voice_mute ? 0.f : gSavedSettings.getF32("AudioLevelMic"));
+		static LLCachedControl<F32> audioLevelMic(gSavedSettings, "AudioLevelMic");
+		LLVoiceClient::getInstance()->setMicGain(voice_mute ? 0.f : (F32)audioLevelMic);
+		// </FS:Ansariel>
 
-		if (!gViewerWindow->getActive() && (gSavedSettings.getBOOL("MuteWhenMinimized")))
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//if (!gViewerWindow->getActive() && (gSavedSettings.getBOOL("MuteWhenMinimized")))
+		static LLCachedControl<bool> muteWhenMinimized(gSavedSettings, "MuteWhenMinimized");
+		if (!gViewerWindow->getActive() && muteWhenMinimized)
+		// </FS:Ansariel>
 		{
 			LLVoiceClient::getInstance()->setMuteMic(true);
 		}
@@ -483,8 +599,18 @@ void audio_update_wind(bool force_update)
 		// don't use the setter setMaxWindGain() because we don't
 		// want to screw up the fade-in on startup by setting actual source gain
 		// outside the fade-in.
-		F32 master_volume  = gSavedSettings.getBOOL("MuteAudio") ? 0.f : gSavedSettings.getF32("AudioLevelMaster");
-		F32 ambient_volume = gSavedSettings.getBOOL("MuteAmbient") ? 0.f : gSavedSettings.getF32("AudioLevelAmbient");
+		// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+		//F32 master_volume  = gSavedSettings.getBOOL("MuteAudio") ? 0.f : gSavedSettings.getF32("AudioLevelMaster");
+		//F32 ambient_volume = gSavedSettings.getBOOL("MuteAmbient") ? 0.f : gSavedSettings.getF32("AudioLevelAmbient");
+		
+		static LLCachedControl<bool> muteAudio(gSavedSettings, "MuteAudio");
+		static LLCachedControl<bool> muteAmbient(gSavedSettings, "MuteAmbient");
+		static LLCachedControl<F32> audioLevelMaster(gSavedSettings, "AudioLevelMaster");
+		static LLCachedControl<F32> audioLevelAmbient(gSavedSettings, "AudioLevelAmbient");
+
+		F32 master_volume  = muteAudio ? 0.f : (F32)audioLevelMaster;
+		F32 ambient_volume = muteAmbient ? 0.f : (F32)audioLevelAmbient;
+		// </FS:Ansariel>
 		F32 max_wind_volume = master_volume * ambient_volume;
 
 		const F32 WIND_SOUND_TRANSITION_TIME = 2.f;

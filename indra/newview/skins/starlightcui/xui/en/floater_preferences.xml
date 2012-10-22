@@ -9,7 +9,7 @@
  help_topic="preferences"
  save_rect="true"
  single_instance="true"
- title="PREFERENCES"
+ title="Preferences"
  width="658">
 	
 	<floater.string name="LoginToChange">
@@ -145,14 +145,6 @@
          layout="topleft"
          help_topic="preferences_advanced1_tab"
          name="advanced1" />
-<!--
-        <panel
-         class="panel_preference"
-         filename="panel_preferences_spellcheck.xml"
-         label="Spell Check"
-         layout="topleft"
-         name="spell_check" />
--->
         <panel
          class="panel_preference"
          filename="panel_preferences_UI.xml"

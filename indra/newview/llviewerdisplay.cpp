@@ -387,6 +387,14 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		const std::string& message = gAgent.getTeleportMessage();
 		switch( gAgent.getTeleportState() )
 		{
+		case LLAgent::TELEPORT_PENDING:
+			gTeleportDisplayTimer.reset();
+			gViewerWindow->setShowProgress(TRUE,!gSavedSettings.getBOOL("FSDisableTeleportScreens"));
+			gViewerWindow->setProgressPercent(llmin(teleport_percent, 0.0f));
+			gAgent.setTeleportMessage(LLAgent::sTeleportProgressMessages["pending"]);
+			gViewerWindow->setProgressString(LLAgent::sTeleportProgressMessages["pending"]);
+			break;
+
 		case LLAgent::TELEPORT_START:
 			// Transition to REQUESTED.  Viewer has sent some kind
 			// of TeleportRequest to the source simulator
@@ -409,17 +417,18 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 
 			gTeleportDisplayTimer.reset();
 			gViewerWindow->setShowProgress(TRUE,!gSavedSettings.getBOOL("FSDisableTeleportScreens"));
-			gViewerWindow->setProgressPercent(0);
+			gViewerWindow->setProgressPercent(llmin(teleport_percent, 0.0f));
 
 			gAgent.setTeleportState( LLAgent::TELEPORT_REQUESTED );
 			gAgent.setTeleportMessage(
-				LLAgent::sTeleportProgressMessages["requesting"]);			
+				LLAgent::sTeleportProgressMessages["requesting"]);
+			gViewerWindow->setProgressString(LLAgent::sTeleportProgressMessages["requesting"]);
 			break;
 
 		case LLAgent::TELEPORT_REQUESTED:
 			// Waiting for source simulator to respond
 			gViewerWindow->setProgressPercent( llmin(teleport_percent, 37.5f) );
-			gViewerWindow->setProgressString(message);		
+			gViewerWindow->setProgressString(message);
 			break;
 
 		case LLAgent::TELEPORT_MOVING:
@@ -474,7 +483,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		case LLAgent::TELEPORT_NONE:
 			// No teleport in progress
 			gViewerWindow->setShowProgress(FALSE,FALSE);
-			gTeleportDisplay = FALSE;			
+			gTeleportDisplay = FALSE;
 			break;
 		}
 	}
@@ -647,11 +656,6 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		LLSpatialGroup::sNoDelete = TRUE;
 		LLTexUnit::sWhiteTexture = LLViewerFetchedTexture::sWhiteImagep->getTexName();
 
-		/*if (LLPipeline::sUseOcclusion && LLPipeline::sRenderDeferred)
-		{ //force occlusion on for all render types if doing deferred render (tighter shadow frustum)
-			LLPipeline::sUseOcclusion = 3;
-		}*/
-
 		S32 occlusion = LLPipeline::sUseOcclusion;
 		if (gDepthDirty)
 		{ //depth buffer is invalid, don't overwrite occlusion state
@@ -780,13 +784,13 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 				gTextureList.updateImages(max_image_decode_time);
 			}
 
-			{
+			/*{
 				LLFastTimer t(FTM_IMAGE_UPDATE_DELETE);
 				//remove dead textures from GL
 				LLImageGL::deleteDeadTextures();
 				stop_glerror();
+			}*/
 			}
-		}
 
 		LLGLState::checkStates();
 		LLGLState::checkClientArrays();
@@ -914,6 +918,28 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		{
 			LLViewerCamera::sCurCameraID = LLViewerCamera::CAMERA_WORLD;
 			LLMemType mt_rg(LLMemType::MTYPE_DISPLAY_RENDER_GEOM);
+
+			if (gSavedSettings.getBOOL("RenderDepthPrePass") && LLGLSLShader::sNoFixedFunction)
+			{
+				gGL.setColorMask(false, false);
+				
+				U32 types[] = { 
+					LLRenderPass::PASS_SIMPLE, 
+					LLRenderPass::PASS_FULLBRIGHT, 
+					LLRenderPass::PASS_SHINY 
+				};
+
+				U32 num_types = LL_ARRAY_SIZE(types);
+				gOcclusionProgram.bind();
+				for (U32 i = 0; i < num_types; i++)
+				{
+					gPipeline.renderObjects(types[i], LLVertexBuffer::MAP_VERTEX, FALSE);
+				}
+
+				gOcclusionProgram.unbind();
+			}
+
+
 			gGL.setColorMask(true, false);
 			if (LLPipeline::sRenderDeferred && !LLPipeline::sUnderWaterRender)
 			{

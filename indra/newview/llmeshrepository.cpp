@@ -1752,7 +1752,7 @@ void LLMeshUploadThread::requestWholeModelFee()
 		mCurlRequest->process();
 		//sleep for 10ms to prevent eating a whole core
 		apr_sleep(10000);
-	} while (mCurlRequest->getQueued() > 0);
+	} while (!LLApp::isQuitting() && mCurlRequest->getQueued() > 0);
 
 	delete mCurlRequest;
 	mCurlRequest = NULL;
@@ -2446,7 +2446,11 @@ S32 LLMeshRepository::loadMesh(LLVOVolume* vobj, const LLVolumeParams& mesh_para
 void LLMeshRepository::notifyLoadedMeshes()
 { //called from main thread
 
-	LLMeshRepoThread::sMaxConcurrentRequests = gSavedSettings.getU32("MeshMaxConcurrentRequests");
+	// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+	//LLMeshRepoThread::sMaxConcurrentRequests = gSavedSettings.getU32("MeshMaxConcurrentRequests");
+	static LLCachedControl<U32> meshMaxConcurrentRequests(gSavedSettings, "MeshMaxConcurrentRequests");
+	LLMeshRepoThread::sMaxConcurrentRequests = (U32)meshMaxConcurrentRequests;
+	// </FS:Ansariel>
 
 	//clean up completed upload threads
 	for (std::vector<LLMeshUploadThread*>::iterator iter = mUploads.begin(); iter != mUploads.end(); )
@@ -3778,7 +3782,11 @@ void LLMeshRepository::buildPhysicsMesh(LLModel::Decomposition& decomp)
 bool LLMeshRepository::meshUploadEnabled()
 {
 	LLViewerRegion *region = gAgent.getRegion();
-	if(gSavedSettings.getBOOL("MeshEnabled") &&
+	// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+	//if(gSavedSettings.getBOOL("MeshEnabled") &&
+	static LLCachedControl<bool> meshEnabled(gSavedSettings, "MeshEnabled");
+	if(meshEnabled &&
+	// </FS:Ansariel>
 	   region)
 	{
 		return region->meshUploadEnabled();
@@ -3789,7 +3797,11 @@ bool LLMeshRepository::meshUploadEnabled()
 bool LLMeshRepository::meshRezEnabled()
 {
 	LLViewerRegion *region = gAgent.getRegion();
-	if(gSavedSettings.getBOOL("MeshEnabled") && 
+	// <FS:Ansariel> Use faster LLCachedControls for frequently visited locations
+	//if(gSavedSettings.getBOOL("MeshEnabled") && 
+	static LLCachedControl<bool> meshEnabled(gSavedSettings, "MeshEnabled");
+	if(meshEnabled &&
+	// </FS:Ansariel>
 	   region)
 	{
 		return region->meshRezEnabled();

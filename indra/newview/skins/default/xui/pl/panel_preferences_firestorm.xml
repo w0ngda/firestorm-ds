@@ -17,6 +17,7 @@
         <check_box label="Ukryj puste foldery systemowe w Szafie" name="DebugHideEmptySystemFolders" tool_tip="Gdy ta opcja jest włączona, to wszystkie puste foldery systemowe - takie jak Ulubione czy Landmarki - są ukrywane" />
         <check_box label="Pokaż folder &quot;Odebrane przedmioty&quot; normalnie w Szafie" name="FSShowInboxFolder" tool_tip="Gdy włączysz tą opcję, to w Szafie będzie można znaleźć folder &quot;Odebrane przedmioty&quot;." />
         <check_box label="Wyłączaj emiter śledzenia po osiągnięciu awatara docelowego (&lt;= 3m)" name="FSDisableAvatarTrackerAtCloseIn" tool_tip="Gdy włączysz tą opcję, to emiter śledzenia będzie wyłączany automatycznie, jeśli dystans od awatara docelowego jest mniejszy niż 3m (domyślne)." />
+        <check_box label="Twórz efekty cząsteczkowe, gdy skrypty się komunikują" name="EffectScriptChatParticles" tool_tip="Gdy włączysz tą opcję, to oskryptowane obiekty będą wyświetlać wirujące cząsteczki świetlne, gdy skrypty będą się komunikować."/>
         <check_box label="Oddzielne frazy wyszukiwania dla każdej z zakładek Szafy" name="FSSplitInventorySearchOverTabs" tool_tip="Gdy włączysz tą opcję, to będzie możliwe wprowadzanie oddzielnych fraz wyszukiwania dla każdej z zakładek Szafy." />
         <check_box name="UseLSLBridge" label="Włącz Most w LScript Language" tool_tip="Pozwala Firestormowi na używanie oskryptowanego dodatku (Mostu), aby rozszerzyć znacznie swoje możliwości" />
         <check_box name="UseLSLFlightAssist" label="Włącz pomocnika lotu w Moście" tool_tip="Włącza skrypt pomagający latać i zawisać na większych wysokościach" />
@@ -96,9 +97,6 @@
         <text name="FSCmdLineCalc_txt">
             Kalkulator (użycie: cmd SIN(2+2))
         </text>
-        <text name="FSCmdLineAutocorrect_txt">
-            Nowe słowo autokor. (cmd list|bad|good)
-        </text>
         <text name="FSCmdLineDrawDistance_txt">
             Zmiana pola widzenia (cmd metry)
         </text>
@@ -161,7 +159,7 @@
         <check_box label="Automatycznie zmieniaj środowisko na ustawione w regionie/parceli" name="UseEnvironmentFromRegionAlways" />
         <check_box label="Płynne przenikanie ustawień regionu i moich Szybkich Preferencji" name="FSInterpolateSky" tool_tip="Opcja kontroluje płynne mieszanie się z sobą ustawień WL regionu i Szybkich Preferencji. Ten efekt może spowodować, że wolniejsze komputery mogą zwalniać na kilka sekund podczas zmiany otoczenia. Wyłącz te dwie opcje, aby pominąć efekt i stosować ustawienia natychmiast." />
         <check_box label="Płynne przenikanie ustawień wody i moich Szybkich Preferencji" name="FSInterpolateWater" tool_tip="To samo co powyżej, ale dla wody." />
-        <text name="FSWLshare_txt">
+        <text name="FSWLshare_txt" width="350">
           Dzielenie się WL Phoenixa dla parcel (eksperymentalne)
         </text>
         <check_box label="Używaj dzielenia się WL Phoenixa dla parcel (eksperymentalne)" name="FSWLParcelEnabled" />
@@ -169,6 +167,10 @@
         <check_box label="Automatycznie stosuj ustawienia WL na parcelach moich grup" name="FSWLWhitelistGroups" />
         <check_box label="Automatycznie stosuj ustawienia WL na wszystkich parcelach" name="FSWLWhitelistAll" />
         <check_box label="Automatycznie zmieniaj środowisko dla WL parcel" name="FSInterpolateParcelWL" tool_tip="To samo, co dla opcji przenikania powyżej, ale dla WL parcel." />
+        <text name="wl_crossfade_label">
+         Czas przenikania (w sekundach):
+         </text>
+        <spinner tool_tip="Czas przenikania z jednego zestawu ustawień w inny [Domyślnie: 3]" name="FSWindlightInterpolateTime" />
     </panel>
     <panel label="Budowanie" name="BuildTab">
         <text name="text_box_objprams">
@@ -197,6 +199,7 @@
         <spinner label="Poz. Z" name="Z pos" />
         <check_box label="Wartości w procentach" tool_tip="Domyślne ustawienie jako procenty, a każda oś na 50" name="EmPivotPercToggle" />
         <check_box label="Podświetlanie wybranych primów" tool_tip="Gdy odznaczysz tą opcję, to żółte/niebieskie podświetlenia krawędzi nie są renderowane - zwiększa wydajność, gdy zaznaczonych jest wiele primów." name="EmBuildPrefsRenderHighlight_toggle" />
+        <check_box label="Używaj CTRL+myszki, aby chwytać obiekty i manipulować nimi" tool_tip="Gdy zaznaczysz tą opcję, to będziesz w stanie chwytać i przesuwać obiekty za pomocą myszki oraz klawisza CTRL." name="FSEnableGrab" />
         <check_box label="Użyj starego zachowania &quot;Ustaw obiekt na sprzedaż&quot;" tool_tip="Gdy zaznaczone, to informacja o tym, że obiekt jest na sprzedaż zapsisywana jest już po zmianie, nie wymagając potwierdzenia." name="FSCommitForSaleOnChange_toggle" />
         <check_box label="Zapisuj skrypty edytowane w Szafie jako Mono" tool_tip="Gdy zaznaczone, to wszystkie skrypty edytowane w Szafie są zapisywane jako Mono zamiast LSL." name="FSSaveInventoryScriptsAsMono_toggle" />
         <check_box label="Włącz preprocesor LSL" tool_tip="Preprocesor LSL będzie aktywny, gdy ta opcja zostanie zaznaczona." name="preproc_checkbox" />

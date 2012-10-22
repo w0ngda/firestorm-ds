@@ -58,6 +58,16 @@ class ViewerManifest(LLManifest):
         self.exclude("*.svn*")
         self.path(src="../../scripts/messages/message_template.msg", dst="app_settings/message_template.msg")
         self.path(src="../../etc/message.xml", dst="app_settings/message.xml")
+        
+        # <FS:LO> Copy dictionaries to a place where the viewer can find them if ran from visual studio
+        if self.prefix(src="app_settings"):
+            # ... and the included spell checking dictionaries
+            pkgdir = os.path.join(self.args['build'], os.pardir, 'packages')
+            if self.prefix(src=pkgdir,dst=""):
+                self.path("dictionaries")
+                self.end_prefix(pkgdir)
+            self.end_prefix("app_settings")
+        # </FS:LO>
 
         if self.is_packaging_viewer():
             if self.prefix(src="app_settings"):
@@ -98,11 +108,18 @@ class ViewerManifest(LLManifest):
 
                 # ... and the entire windlight directory
                 self.path("windlight")
-                # ... and the pre-installed spell checking dictionaries
-                self.path("dictionaries")
+
+                # <FS:LO> Copy dictionaries to a place where the viewer can find them if ran from visual studio
+                # ... and the included spell checking dictionaries
+#                pkgdir = os.path.join(self.args['build'], os.pardir, 'packages')
+#                if self.prefix(src=pkgdir,dst=""):
+#                    self.path("dictionaries")
+#                    self.end_prefix(pkgdir)
+                # </FS:LO>
                 # include the entire beams directory
                 self.path("beams")
                 self.path("beamsColors")
+
 
                 self.end_prefix("app_settings")
 
@@ -674,10 +691,10 @@ class WindowsManifest(ViewerManifest):
         
         #AO: Try to sign original executable first, if we can, using best available signing cert.
         try:
-            subprocess.check_call(["signtool.exe","sign","/a","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\firestorm-bin.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            subprocess.check_call(["signtool.exe","sign","/a","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\slplugin.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            subprocess.check_call(["signtool.exe","sign","/a","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\SLVoice.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-            subprocess.check_call(["signtool.exe","sign","/a","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\"+self.final_exe()],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+            subprocess.check_call(["signtool.exe","sign","/n","Phoenix","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\firestorm-bin.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+            subprocess.check_call(["signtool.exe","sign","/n","Phoenix","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\slplugin.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+            subprocess.check_call(["signtool.exe","sign","/n","Phoenix","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\SLVoice.exe"],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+            subprocess.check_call(["signtool.exe","sign","/n","Phoenix","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\"+self.final_exe()],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
         except Exception, e:
             print "Couldn't sign final binary. Tried to sign %s" % self.args['configuration']+"\\"+self.final_exe()
             
@@ -700,9 +717,9 @@ class WindowsManifest(ViewerManifest):
         self.run_command('"' + proper_windows_path(NSIS_path) + '" /V2 ' + self.dst_path_of(tempfile))
         # self.remove(self.dst_path_of(tempfile))
 
-        #AO: Try to sign installer next, if we can, using best available signing cert.
+        #AO: Try to sign installer next, if we can, using "The Phoenix Viewer Project" signing cert.
         try:
-            subprocess.check_call(["signtool.exe","sign","/a","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\"+substitution_strings['installer_file']],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+            subprocess.check_call(["signtool.exe","sign","/n","Phoenix","/d","Firestorm","/du","http://www.phoenixviewer.com",self.args['configuration']+"\\"+substitution_strings['installer_file']],stderr=subprocess.PIPE,stdout=subprocess.PIPE)
         except Exception, e:
             print "Working directory: %s" % os.getcwd()
             print "Couldn't sign windows installer. Tried to sign %s" % self.args['configuration']+"\\"+substitution_strings['installer_file']
@@ -1209,9 +1226,11 @@ class Linux_i686Manifest(LinuxManifest):
             self.path("libopenjpeg.so*")
             self.path("libdirectfb-1.4.so.5")
             self.path("libfusion-1.4.so.5")
+            self.path("libdirect-1.4.so.5.0.4")
             self.path("libdirect-1.4.so.5")
             self.path("libhunspell-1.3.so")
             self.path("libhunspell-1.3.so.0")
+            self.path("libhunspell-1.3.so.0.0.0")
             self.path("libalut.so")
             self.path("libopenal.so", "libopenal.so.1")
             self.path("libopenal.so", "libvivoxoal.so.1") # vivox's sdk expects this soname

@@ -239,6 +239,8 @@ LLViewerObject::LLViewerObject(const LLUUID &id, const LLPCode pcode, LLViewerRe
 	mNumFaces(0),
 	mTimeDilation(1.f),
 	mRotTime(0.f),
+	mAngularVelocityRot(),
+	mPreviousRotation(),
 	mJointInfo(NULL),
 	mState(0),
 	mMedia(NULL),
@@ -269,6 +271,7 @@ LLViewerObject::LLViewerObject(const LLUUID &id, const LLPCode pcode, LLViewerRe
 	{
 		mPositionAgent = mRegionp->getOriginAgent();
 	}
+	resetRot();
 
 	LLViewerObject::sNumObjects++;
 }
@@ -436,7 +439,9 @@ void LLViewerObject::dump() const
 	llinfos << "PositionAgent: " << getPositionAgent() << llendl;
 	llinfos << "PositionGlobal: " << getPositionGlobal() << llendl;
 	llinfos << "Velocity: " << getVelocity() << llendl;
-	if (mDrawable.notNull() && mDrawable->getNumFaces())
+	if (mDrawable.notNull() && 
+		mDrawable->getNumFaces() && 
+		mDrawable->getFace(0))
 	{
 		LLFacePool *poolp = mDrawable->getFace(0)->getPool();
 		if (poolp)
@@ -1448,9 +1453,10 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 #else
 					val = (U16 *) &data[count];
 #endif
-					setAngularVelocity(	U16_to_F32(val[VX], -size, size),
-										U16_to_F32(val[VY], -size, size),
-										U16_to_F32(val[VZ], -size, size));
+					new_angv.set(U16_to_F32(val[VX], -size, size),
+						U16_to_F32(val[VY], -size, size),
+						U16_to_F32(val[VZ], -size, size));
+					setAngularVelocity(new_angv);
 					break;
 
 				case 16:
@@ -1474,9 +1480,10 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					new_rot.mQ[VZ] = U8_to_F32(data[11], -1.f, 1.f);
 					new_rot.mQ[VW] = U8_to_F32(data[12], -1.f, 1.f);
 
-					setAngularVelocity(	U8_to_F32(data[13], -size, size),
-										U8_to_F32(data[14], -size, size),
-										U8_to_F32(data[15], -size, size) );
+					new_angv.set(U8_to_F32(data[13], -size, size),
+						U8_to_F32(data[14], -size, size),
+						U8_to_F32(data[15], -size, size));
+					setAngularVelocity(new_angv);
 					break;
 				}
 
@@ -1548,9 +1555,10 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 				dp->unpackU16(val[VX], "AccX");
 				dp->unpackU16(val[VY], "AccY");
 				dp->unpackU16(val[VZ], "AccZ");
-				setAngularVelocity(	U16_to_F32(val[VX], -64.f, 64.f),
-									U16_to_F32(val[VY], -64.f, 64.f),
-									U16_to_F32(val[VZ], -64.f, 64.f));
+				new_angv.set(U16_to_F32(val[VX], -64.f, 64.f),
+				             U16_to_F32(val[VY], -64.f, 64.f),
+				             U16_to_F32(val[VZ], -64.f, 64.f));
+				setAngularVelocity(new_angv);
 			}
 			break;
 			case OUT_FULL_COMPRESSED:
@@ -1594,8 +1602,8 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 
 				if (value & 0x80)
 				{
-					dp->unpackVector3(vec, "Omega");
-					setAngularVelocity(vec);
+					dp->unpackVector3(new_angv, "Omega");
+					setAngularVelocity(new_angv);
 				}
 
 				if (value & 0x20)
@@ -2109,18 +2117,31 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 		}
 	}
 
-	if (new_rot != mLastRot
-		|| new_angv != old_angv)
+	if ((new_rot != getRotation())
+		|| (new_angv != old_angv))
 	{
-		if (new_rot != mLastRot)
+		if (new_rot != mPreviousRotation)
 		{
-			mLastRot = new_rot;
-			setRotation(new_rot);
+			resetRot();
 		}
-		
+		else if (new_angv != old_angv)
+		{
+			if (flagUsePhysics() || new_angv.isExactlyZero())
+			{
+				resetRot();
+			}
+			else
+			{
+				resetRotTime();
+			}
+		}
+
+		// Remember the last rotation value
+		mPreviousRotation = new_rot;
+
+		// Set the rotation of the object followed by adjusting for the accumulated angular velocity (llSetTargetOmega)
+		setRotation(new_rot * mAngularVelocityRot);
 		setChanged(ROTATED | SILHOUETTE);
-		
-		resetRot();
 	}
 
 
@@ -2433,14 +2454,15 @@ void LLViewerObject::interpolateLinearMotion(const F64 & time, const F32 & dt)
 		{	// This will put the object underground, but we can't tell if it will stop 
 			// at ground level or not
 			min_height = LLWorld::getInstance()->getMinAllowedZ(this, new_pos_global);
+			// Cap maximum height
+			static LLCachedControl<bool> no_fly_height_limit(gSavedSettings, "FSRemoveFlyHeightLimit");
+			if(!no_fly_height_limit)
+			{
+				new_pos.mV[VZ] = llmin(LLWorld::getInstance()->getRegionMaxHeight(), new_pos.mV[VZ]);
+			}
 		}
 
 		new_pos.mV[VZ] = llmax(min_height, new_pos.mV[VZ]);
-		static LLCachedControl<bool> no_fly_height_limit(gSavedSettings, "FSRemoveFlyHeightLimit");
-		if(!no_fly_height_limit)
-		{
-			new_pos.mV[VZ] = llmin(LLWorld::getInstance()->getRegionMaxHeight(), new_pos.mV[VZ]);
-		}
 
 		// Check to see if it's going off the region
 		LLVector3 temp(new_pos);
@@ -2846,6 +2868,23 @@ void LLViewerObject::processTaskInvFile(void** user_data, S32 error_code, LLExtS
 	   (object = gObjectList.findObject(ft->mTaskID)))
 	{
 		object->loadTaskInvFile(ft->mFilename);
+
+		LLInventoryObject::object_list_t::iterator it = object->mInventory->begin();
+		LLInventoryObject::object_list_t::iterator end = object->mInventory->end();
+		std::list<LLUUID>& pending_lst = object->mPendingInventoryItemsIDs;
+
+		for (; it != end && pending_lst.size(); ++it)
+		{
+			LLViewerInventoryItem* item = dynamic_cast<LLViewerInventoryItem*>(it->get());
+			if(item && item->getType() != LLAssetType::AT_CATEGORY)
+			{
+				std::list<LLUUID>::iterator id_it = std::find(pending_lst.begin(), pending_lst.begin(), item->getAssetUUID());
+				if (id_it != pending_lst.end())
+				{
+					pending_lst.erase(id_it);
+				}
+			}
+		}
 	}
 	else
 	{
@@ -2952,13 +2991,40 @@ void LLViewerObject::removeInventory(const LLUUID& item_id)
 	++mInventorySerialNum;
 }
 
+bool LLViewerObject::isTextureInInventory(LLViewerInventoryItem* item)
+{
+	bool result = false;
+
+	if (item && LLAssetType::AT_TEXTURE == item->getType())
+	{
+		std::list<LLUUID>::iterator begin = mPendingInventoryItemsIDs.begin();
+		std::list<LLUUID>::iterator end = mPendingInventoryItemsIDs.end();
+
+		bool is_fetching = std::find(begin, end, item->getAssetUUID()) != end;
+		bool is_fetched = getInventoryItemByAsset(item->getAssetUUID()) != NULL;
+
+		result = is_fetched || is_fetching;
+	}
+
+	return result;
+}
+
+void LLViewerObject::updateTextureInventory(LLViewerInventoryItem* item, U8 key, bool is_new)
+{
+	if (item && !isTextureInInventory(item))
+	{
+		mPendingInventoryItemsIDs.push_back(item->getAssetUUID());
+		updateInventory(item, key, is_new);
+	}
+}
+
 void LLViewerObject::updateInventory(
 	LLViewerInventoryItem* item,
 	U8 key,
 	bool is_new)
 {
 	LLMemType mt(LLMemType::MTYPE_OBJECT);
-	
+
 	// This slices the object into what we're concerned about on the
 	// viewer. The simulator will take the permissions and transfer
 	// ownership.
@@ -4197,7 +4263,7 @@ S32 LLViewerObject::setTETextureCore(const U8 te, const LLUUID& uuid, LLHost hos
 	return retval;
 }
 
-
+//virtual
 void LLViewerObject::changeTEImage(S32 index, LLViewerTexture* new_image) 
 {
 	if(index < 0 || index >= getNumTEs())
@@ -4525,7 +4591,11 @@ U32 LLViewerObject::getNumVertices() const
 		num_faces = mDrawable->getNumFaces();
 		for (i = 0; i < num_faces; i++)
 		{
-			num_vertices += mDrawable->getFace(i)->getGeomCount();
+			LLFace * facep = mDrawable->getFace(i);
+			if (facep)
+			{
+				num_vertices += facep->getGeomCount();
+			}
 		}
 	}
 	return num_vertices;
@@ -4540,7 +4610,11 @@ U32 LLViewerObject::getNumIndices() const
 		num_faces = mDrawable->getNumFaces();
 		for (i = 0; i < num_faces; i++)
 		{
-			num_indices += mDrawable->getFace(i)->getIndicesCount();
+			LLFace * facep = mDrawable->getFace(i);
+			if (facep)
+			{
+				num_indices += facep->getIndicesCount();
+			}
 		}
 	}
 	return num_indices;
@@ -5559,16 +5633,29 @@ void LLViewerObject::applyAngularVelocity(F32 dt)
 
 		ang_vel *= 1.f/omega;
 		
+		// calculate the delta increment based on the object's angular velocity
 		dQ.setQuat(angle, ang_vel);
+
+		// accumulate the angular velocity rotations to re-apply in the case of an object update
+		mAngularVelocityRot *= dQ;
 		
+		// Just apply the delta increment to the current rotation
 		setRotation(getRotation()*dQ);
 		setChanged(MOVED | SILHOUETTE);
 	}
 }
 
-void LLViewerObject::resetRot()
+void LLViewerObject::resetRotTime()
 {
 	mRotTime = 0.0f;
+}
+
+void LLViewerObject::resetRot()
+{
+	resetRotTime();
+
+	// Reset the accumulated angular velocity rotation
+	mAngularVelocityRot.loadIdentity(); 
 }
 
 U32 LLViewerObject::getPartitionType() const

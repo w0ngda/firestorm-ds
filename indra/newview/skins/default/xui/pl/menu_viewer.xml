@@ -17,7 +17,7 @@
 			<menu_item_call label="Usiądź" name="Sit Down Here"/>
 			<menu_item_check label="Zacznij latać" name="Fly"/>
 			<menu_item_check label="Zawsze biegnij" name="Always Run"/>
-			<menu_item_check label="Wymuś siadanie na ziemi" name="Force Toggle Sitting"/>
+			<menu_item_check label="Wymuś siadanie na ziemi" name="Force Toggle Sitting" shortcut="control|alt|K"/>
 			<menu_item_check label="Tryb widmowy" name="Avatar Phantom"/>
 			<menu_item_check label="Szybki skok" name="Avatar Ignore Prejump"/>
 		</menu>
@@ -42,6 +42,7 @@
 		</menu>
 		<menu_item_call label="Uzyskaj status administratora" name="Request Admin Options"/>
 		<menu_item_call label="Porzuć status administratora" name="Leave Admin Options"/>
+		<menu_item_check label="Pokaż dodatki HUD" name="Show HUD Attachments"/>
 		<menu_item_call label="Wyłącz [APP_NAME]" name="Quit"/>
 	</menu>
 	<menu label="Komunikacja" name="Communicate">
@@ -61,6 +62,7 @@
 		<menu_item_check label="Gesty" name="Gestures"/>
 		<menu_item_check label="Przekształcanie głosu" name="ShowVoice"/>
 		<menu_item_check label="Głos w pobliżu" name="Nearby Voice"/>
+		<menu_item_call label="Lista zablokowanych" name="Block List"/>
 	</menu>
 	<menu label="Świat" name="World">
 		<menu_item_call label="Osoby w pobliżu" name="Active Speakers"/>
@@ -163,6 +165,7 @@
 			<menu_item_check label="Pokaż zaawansowane uprawnienia" name="DebugPermissions"/>
 			<menu_item_check label="Wybierz tylko moje obiekty" name="Select Only My Objects"/>
 			<menu_item_check label="Wybierz tylko obiekty przesuwalne" name="Select Only Movable Objects"/>
+			<menu_item_check label="Dołącz obiekty, których właścicielem jest grupa" name="Include Group-Owned Objects"/>
 			<menu_item_check label="Wybierz przez otoczenie" name="Select By Surrounding"/>
 			<menu_item_check label="Pokaż kontury selekcji" name="Show Selection Outlines"/>
 			<menu_item_check label="Zobacz ukrytą selekcję" name="Show Hidden Selection"/>
@@ -198,6 +201,7 @@
 		<menu_item_call label="Sprawdź stan świata (Siatki)" name="Grid Status"/>
 		<menu_item_call label="Zgłoś nadużycie" name="Report Abuse"/>
 		<menu_item_call label="Zgłoś błędy klienta" name="Report Bug"/>
+		<menu_item_call label="Zderzenia, popchnięcia i uderzenia" name="Bumps, Pushes &amp;amp; Hits"/>
 		<menu_item_check label="Włącz przycisk Sysinfo" name="Enable Sysinfo Button"/>
 		<menu_item_call label="Informacje o [APP_NAME]" name="About Second Life"/>
 	</menu>
@@ -239,8 +243,12 @@
 			<menu_item_check label="Ukryj cząsteczki" name="Hide Particles"/>
 			<menu_item_check label="Ukryj zaznaczone" name="Hide Selected"/>
 			<menu_item_check label="Pokaż przezroczyste obiekty" name="Highlight Transparent"/>
-			<menu_item_check label="Pokaż załączniki HUD" name="Show HUD Attachments"/>
 			<menu_item_check label="Pokaż celownik myszki" name="ShowCrosshairs"/>
+			<menu label="Chmurki pomocy" name="Hover Tips">
+				<menu_item_check label="Pokazuj chmurki pomocy" name="Show Tips"/>
+				<menu_item_check label="Pokazuj chmurki ponad terenem" name="Land Tips"/>
+				<menu_item_check label="Pokazuj chmurki dla wszystkich obiektów" name="Tips On All Objects"/>
+			</menu>
 		</menu>
 		<menu label="Rodzaje renderowania" name="Rendering Types">
 			<menu_item_check label="Podstawowe" name="Rendering Type Simple"/>
@@ -341,7 +349,7 @@
 		</menu>
 		<menu label="Renderowanie metadanych" name="Render Metadata">
 			<menu_item_check label="Bryły brzegowe (Bounding Boxes)" name="Bounding Boxes"/>
-			<menu_item_check label="Normalne" name="Normals"/>
+			<menu_item_check label="Wektory normalne" name="Normals"/>
 			<menu_item_check label="Drzewo okluzji" name="Octree"/>
 			<menu_item_check label="Wzmocniona okluzja (Shadow Frusta)" name="Shadow Frusta"/>
 			<menu_item_check label="Kształty fizyczne" name="Physics Shapes"/>
@@ -399,7 +407,6 @@
 			<menu_item_call label="Zagub pakiet" name="Drop a Packet"/>
 		</menu>
 		<menu_item_call label="Zrzut oskryptowanej kamery" name="Dump Scripted Camera"/>
-		<menu_item_call label="Zderzenia, popchnięcia i uderzenia" name="Bumps, Pushes &amp;amp; Hits"/>
 		<menu label="Nagrywanie" name="Recorder">
 			<menu_item_call label="Rozpocznij odtwarzanie" name="Start Playback"/>
 			<menu_item_call label="Zatrzymaj odtwarzanie" name="Stop Playback"/>
@@ -456,7 +463,6 @@
 				<menu_item_call label="Zmień geometrię postaci" name="Toggle Character Geometry"/>
 				<menu_item_call label="Testowy mężczyzna" name="Test Male"/>
 				<menu_item_call label="Testowa kobieta" name="Test Female"/>
-				<menu_item_call label="Przełącz PG" name="Toggle PG"/>
 				<menu_item_check label="Pozwól na zaznaczanie awatarów" name="Allow Select Avatar"/>
 			</menu>
 			<menu_item_call label="Powrót do domyślnych parametrów" name="Force Params to Default"/>

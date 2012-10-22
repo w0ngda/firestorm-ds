@@ -30,12 +30,12 @@
 #include "llfloaternamedesc.h"
 
 #include "lldynamictexture.h"
-#include "llfloatermodelwizard.h"
 #include "llquaternion.h"
 #include "llmeshrepository.h"
 #include "llmodel.h"
 #include "llthread.h"
 #include "llviewermenufile.h"
+#include "llfloatermodeluploadbase.h"
 
 class LLComboBox;
 class LLJoint;
@@ -256,7 +256,6 @@ protected:
 	S32				mLastMouseX;
 	S32				mLastMouseY;
 	LLRect			mPreviewRect;
-	U32				mGLName;
 	static S32		sUploadAmount;
 	
 	std::set<LLPointer<DecompRequest> > mCurRequest;
@@ -293,7 +292,10 @@ private:
 	LLButton* mCalculateBtn;
 };
 
-class LLMeshFilePicker : public LLFilePickerThread
+// <FS:CR Threaded Filepickers>
+//class LLMeshFilePicker : public LLFilePickerThread
+class LLMeshFilePicker : public LLLoadFilePickerThread
+// </FS:CR Threaded Filepickers>
 {
 public:
 	LLMeshFilePicker(LLModelPreview* mp, S32 lod);
@@ -390,9 +392,7 @@ private:
  protected:
 	friend class LLModelLoader;
 	friend class LLFloaterModelPreview;
-	friend class LLFloaterModelWizard;
 	friend class LLFloaterModelPreview::DecompRequest;
-	friend class LLFloaterModelWizard::DecompRequest;
 	friend class LLPhysicsDecomp;
 
 	LLFloater*  mFMP;

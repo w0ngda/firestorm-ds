@@ -252,10 +252,13 @@ BOOL LLToolPlacer::addObject( LLPCode pcode, S32 x, S32 y, U8 use_physics )
 	}
 
 	// Play creation sound
-	if (gAudiop)
+	// <FS:PP> Configurable UI sounds
+	//if (gAudiop)
+	if (gAudiop && gSavedSettings.getBOOL("PlayModeUISndObjectCreate"))
+	// </FS:PP>
 	{
 		gAudiop->triggerSound( LLUUID(gSavedSettings.getString("UISndObjectCreate")),
-							   gAgent.getID(), 1.0f, LLAudioEngine::AUDIO_TYPE_UI);
+								gAgent.getID(), 1.0f, LLAudioEngine::AUDIO_TYPE_UI);
 	}
 
 	gMessageSystem->newMessageFast(_PREHASH_ObjectAdd);

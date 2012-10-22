@@ -35,7 +35,7 @@
 #include "llfloaterpreference.h"
 
 #include "message.h"
-
+#include "llfloaterautoreplacesettings.h"
 #include "llviewertexturelist.h"
 #include "llagent.h"
 #include "llavatarconstants.h"
@@ -122,11 +122,6 @@
 #include "fslslbridge.h"
 //-TT
 #include "NACLantispam.h"
-#include "lggautocorrectfloater.h"
-
-// [SL:KB] - Patch: Misc-Spellcheck | Checked: 2011-09-06 (Catznip-2.8.0a) | Added: Catznip-2.8.0a
-#include "llhunspell.h"
-// [/SL:KB]
 
 #include "llviewernetwork.h" // <FS:AW  opensim search support>
 
@@ -217,6 +212,12 @@ bool callback_clear_debug_search(const LLSD& notification, const LLSD& response)
 bool callback_pick_debug_search(const LLSD& notification, const LLSD& response);
 // </FS:AW  opensim search support>
 
+// <FS:LO> FIRE-7050 - Add a warning to the Growl preference option because of FIRE-6868
+#ifdef LL_WINDOWS
+bool callback_growl_not_installed(const LLSD& notification, const LLSD& response);
+#endif
+// </FS:LO>
+
 //bool callback_skip_dialogs(const LLSD& notification, const LLSD& response, LLFloaterPreference* floater);
 //bool callback_reset_dialogs(const LLSD& notification, const LLSD& response, LLFloaterPreference* floater);
 
@@ -234,6 +235,21 @@ bool callback_clear_cache(const LLSD& notification, const LLSD& response)
 
 	return false;
 }
+
+// <FS:LO> FIRE-7050 - Add a warning to the Growl preference option because of FIRE-6868
+#ifdef LL_WINDOWS
+bool callback_growl_not_installed(const LLSD& notification, const LLSD& response)
+{
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
+	if ( option == 1 ) // NO
+	{
+		gSavedSettings.setBOOL("FSEnableGrowl", FALSE);
+	}
+
+	return false;
+}
+#endif
+// </FS:LO>
 
 bool callback_clear_browser_cache(const LLSD& notification, const LLSD& response)
 {
@@ -405,12 +421,11 @@ LLFloaterPreference::LLFloaterPreference(const LLSD& key)
 	mCommitCallbackRegistrar.add("Pref.ClearCache",				boost::bind(&LLFloaterPreference::onClickClearCache, this));
 	mCommitCallbackRegistrar.add("Pref.WebClearCache",			boost::bind(&LLFloaterPreference::onClickBrowserClearCache, this));
 	mCommitCallbackRegistrar.add("Pref.SetCache",				boost::bind(&LLFloaterPreference::onClickSetCache, this));
+	mCommitCallbackRegistrar.add("Pref.ResetCache",				boost::bind(&LLFloaterPreference::onClickResetCache, this));
 	mCommitCallbackRegistrar.add("Pref.BrowseCache",			boost::bind(&LLFloaterPreference::onClickBrowseCache, this));
 	mCommitCallbackRegistrar.add("Pref.BrowseCrashLogs",		boost::bind(&LLFloaterPreference::onClickBrowseCrashLogs, this));
 	mCommitCallbackRegistrar.add("Pref.BrowseSettingsDir",		boost::bind(&LLFloaterPreference::onClickBrowseSettingsDir, this));
 	mCommitCallbackRegistrar.add("Pref.BrowseLogPath",			boost::bind(&LLFloaterPreference::onClickBrowseChatLogDir, this));
-	mCommitCallbackRegistrar.add("Pref.ResetCache",				boost::bind(&LLFloaterPreference::onClickResetCache, this));
-	mCommitCallbackRegistrar.add("Pref.ClearCache",				boost::bind(&LLFloaterPreference::onClickClearCache, this));
 	mCommitCallbackRegistrar.add("Pref.Cookies",	    		boost::bind(&LLFloaterPreference::onClickCookies, this));
 	mCommitCallbackRegistrar.add("Pref.Javascript",	        	boost::bind(&LLFloaterPreference::onClickJavascript, this));
 //	mCommitCallbackRegistrar.add("Pref.ClickSkin",				boost::bind(&LLFloaterPreference::onClickSkin, this,_1, _2));
@@ -438,13 +453,15 @@ LLFloaterPreference::LLFloaterPreference(const LLSD& key)
 	mCommitCallbackRegistrar.add("Pref.BlockList",				boost::bind(&LLFloaterPreference::onClickBlockList, this));
 	mCommitCallbackRegistrar.add("Pref.Proxy",					boost::bind(&LLFloaterPreference::onClickProxySettings, this));
 	mCommitCallbackRegistrar.add("Pref.TranslationSettings",	boost::bind(&LLFloaterPreference::onClickTranslationSettings, this));
+	mCommitCallbackRegistrar.add("Pref.AutoReplace",            boost::bind(&LLFloaterPreference::onClickAutoReplace, this));
+	mCommitCallbackRegistrar.add("Pref.SpellChecker",           boost::bind(&LLFloaterPreference::onClickSpellChecker, this));
 	mCommitCallbackRegistrar.add("FS.ToggleSortContacts",		boost::bind(&LLFloaterPreference::onClickSortContacts, this));
 	mCommitCallbackRegistrar.add("NACL.AntiSpamUnblock",		boost::bind(&LLFloaterPreference::onClickClearSpamList, this));
 	mCommitCallbackRegistrar.add("NACL.SetPreprocInclude",		boost::bind(&LLFloaterPreference::setPreprocInclude, this));
 	//[ADD - Clear Settings : SJ]
 	mCommitCallbackRegistrar.add("Pref.ClearSettings",			boost::bind(&LLFloaterPreference::onClickClearSettings, this));
 	mCommitCallbackRegistrar.add("Pref.Online_Notices",			boost::bind(&LLFloaterPreference::onClickChatOnlineNotices, this));
-	
+
 	sSkin = gSavedSettings.getString("SkinCurrent");
 
 	mCommitCallbackRegistrar.add("Pref.ClickActionChange",				boost::bind(&LLFloaterPreference::onClickActionChange, this));
@@ -454,13 +471,7 @@ LLFloaterPreference::LLFloaterPreference(const LLSD& key)
 	gSavedSettings.getControl("UseDisplayNames")->getCommitSignal()->connect(boost::bind(&handleDisplayNamesOptionChanged,  _2));
 	gSavedSettings.getControl("UseLSLFlightAssist")->getCommitSignal()->connect(boost::bind(&handleFlightAssistOptionChanged,  _2));
 	gSavedSettings.getControl("FSPublishRadarTag")->getCommitSignal()->connect(boost::bind(&handlePublishRadarTagOptionChanged, _2));
-
-	//[FIX FIRE-1927 - enable DoubleClickTeleport shortcut : SJ] no longer exists!
-	//gSavedSettings.getControl("DoubleClickTeleport")->getCommitSignal()->connect(boost::bind(&LLFloaterPreference::onChangeDoubleClickSettings, this));
-
-    //autocorrect button
-	mCommitCallbackRegistrar.add("FSPref.ShowAC", boost::bind(&LGGAutoCorrectFloater::showFloater));
-
+	
 	LLAvatarPropertiesProcessor::getInstance()->addObserver( gAgent.getID(), this );
 }
 
@@ -545,6 +556,8 @@ BOOL LLFloaterPreference::postBuild()
 	gSavedSettings.getControl("ChatFontSize")->getSignal()->connect(boost::bind(&LLViewerChat::signalChatFontChanged));
 
 	gSavedSettings.getControl("ChatBubbleOpacity")->getSignal()->connect(boost::bind(&LLFloaterPreference::onNameTagOpacityChange, this, _2));
+
+	gSavedSettings.getControl("PreferredMaturity")->getSignal()->connect(boost::bind(&LLFloaterPreference::onChangeMaturity, this));
 
 	LLTabContainer* tabcontainer = getChild<LLTabContainer>("pref core");
 	if (!tabcontainer->selectTab(gSavedSettings.getS32("LastPrefTab")))
@@ -773,6 +786,9 @@ void LLFloaterPreference::cancel()
 	// hide translation settings floater
 	LLFloaterReg::hideInstance("prefs_translation");
 	
+	// hide translation settings floater
+	LLFloaterReg::hideInstance("prefs_autoreplace");
+	
 	// cancel hardware menu
 	LLFloaterHardwareSettings* hardware_settings = LLFloaterReg::getTypedInstance<LLFloaterHardwareSettings>("prefs_hardware_settings");
 	if (hardware_settings)
@@ -862,6 +878,9 @@ void LLFloaterPreference::onOpen(const LLSD& key)
 	
 	// Load (double-)click to walk/teleport settings.
 	updateClickActionControls();
+	
+	// <FS:PP> Load UI Sounds tabs settings.
+	updateUISoundsControls();
 	
 	// Enabled/disabled popups, might have been changed by user actions
 	// while preferences floater was closed.
@@ -1229,7 +1248,6 @@ void LLFloaterPreference::refreshSkin(void* data)
 	self->getChild<LLRadioGroup>("skin_selection", true)->setValue(sSkin);
 }
 */
-
 void LLFloaterPreference::buildPopupLists()
 {
 	LLScrollListCtrl& disabled_popups =
@@ -1277,8 +1295,10 @@ void LLFloaterPreference::buildPopupLists()
 						}
 					}
 				}
-				row["columns"][1]["font"] = "SANSSERIF_SMALL";
-				row["columns"][1]["width"] = 360;
+				// <FS:LO> FIRE-7938 - Some Dialog Alerts text in preferences get truncated 
+				//row["columns"][1]["font"] = "SANSSERIF_SMALL";
+				//row["columns"][1]["width"] = 360;
+				// </FS:LO>
 			}
 			item = disabled_popups.addElement(row);
 		}
@@ -1314,9 +1334,10 @@ void LLFloaterPreference::refreshEnabledState()
 #else
 		getChildView("vbo_stream")->setEnabled(LLVertexBuffer::sEnableVBOs);
 #endif
-
-	if (!LLFeatureManager::getInstance()->isFeatureAvailable("RenderCompressTextures") ||
-		!gGLManager.mHasVertexBufferObject)
+	
+	//if (!LLFeatureManager::getInstance()->isFeatureAvailable("RenderCompressTextures") ||  FS:TM disabled as we do not have RenderCompressTextures in our feature table.
+	//	!gGLManager.mHasVertexBufferObject)
+	if (!gGLManager.mHasVertexBufferObject)
 	{
 		getChildView("texture compression")->setEnabled(FALSE);
 	}
@@ -1645,9 +1666,10 @@ void LLFloaterPreference::onClickSetMiddleMouse()
 
 void LLFloaterPreference::onClickSetSounds()
 {
-	// Disable Enable gesture sounds checkbox if the master sound is disabled 
+	// Disable Enable gesture/collisions sounds checkbox if the master sound is disabled
 	// or if sound effects are disabled.
 	getChild<LLCheckBoxCtrl>("gesture_audio_play_btn")->setEnabled(!gSavedSettings.getBOOL("MuteSounds"));
+	getChild<LLCheckBoxCtrl>("collisions_audio_play_btn")->setEnabled(!gSavedSettings.getBOOL("MuteSounds"));
 }
 
 /*
@@ -1890,6 +1912,16 @@ void LLFloaterPreference::onClickTranslationSettings()
 	LLFloaterReg::showInstance("prefs_translation");
 }
 
+void LLFloaterPreference::onClickAutoReplace()
+{
+	LLFloaterReg::showInstance("prefs_autoreplace");
+}
+
+void LLFloaterPreference::onClickSpellChecker()
+{
+		LLFloaterReg::showInstance("prefs_spellchecker");
+}
+
 void LLFloaterPreference::onClickActionChange()
 {
 	mClickActionDirty = true;
@@ -1914,6 +1946,52 @@ void LLFloaterPreference::updateClickActionControls()
 	getChild<LLComboBox>("double_click_action_combo")->setValue(dbl_click_to_teleport ? 2 : (int)dbl_click_to_walk);
 }
 
+// <FS:PP> Load UI Sounds tabs settings
+void LLFloaterPreference::updateUISoundsControls()
+{
+	getChild<LLComboBox>("PlayModeUISndAlert")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndAlert"));
+	getChild<LLComboBox>("PlayModeUISndBadKeystroke")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndBadKeystroke"));
+	getChild<LLComboBox>("PlayModeUISndClick")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndClick"));
+	getChild<LLComboBox>("PlayModeUISndClickRelease")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndClickRelease"));
+	getChild<LLComboBox>("PlayModeUISndFriendOffline")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndFriendOffline"));
+	getChild<LLComboBox>("PlayModeUISndFriendOnline")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndFriendOnline"));
+	getChild<LLComboBox>("PlayModeUISndHealthReductionF")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndHealthReductionF"));
+	getChild<LLComboBox>("PlayModeUISndHealthReductionM")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndHealthReductionM"));
+	getChild<LLComboBox>("PlayModeUISndInvalidOp")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndInvalidOp"));
+	getChild<LLComboBox>("PlayModeUISndMoneyChangeDown")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndMoneyChangeDown"));
+	getChild<LLComboBox>("PlayModeUISndMoneyChangeUp")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndMoneyChangeUp"));
+	getChild<LLComboBox>("PlayModeUISndNewIncomingIMSession")->setValue((int)gSavedSettings.getU32("PlayModeUISndNewIncomingIMSession")); // 0, 1, 2. Shared with Chat > General > "When receiving Instant Messages"
+	getChild<LLComboBox>("PlayModeUISndNewIncomingGroupIMSession")->setValue((int)gSavedSettings.getU32("PlayModeUISndNewIncomingGroupIMSession")); // 0, 1, 2. Shared with Chat > General > "When receiving Group Instant Messages"
+	getChild<LLComboBox>("PlayModeUISndStartIM")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndStartIM"));
+	getChild<LLComboBox>("PlayModeUISndObjectCreate")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndObjectCreate"));
+	getChild<LLComboBox>("PlayModeUISndObjectDelete")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndObjectDelete"));
+	getChild<LLComboBox>("PlayModeUISndObjectRezIn")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndObjectRezIn"));
+	getChild<LLComboBox>("PlayModeUISndObjectRezOut")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndObjectRezOut"));
+	getChild<LLComboBox>("QuietSnapshotsToDiskComboBox")->setValue((int)gSavedSettings.getBOOL("QuietSnapshotsToDisk")); // Shared with "Quiet Snapshots" option from Advanced menu
+	getChild<LLComboBox>("PlayModeUISndTeleportOut")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndTeleportOut")); // Shared with Move and View > Movement > "Play sound effect when teleporting"
+	getChild<LLComboBox>("PlayModeUISndRegionRestart")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndRegionRestart"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuAppear")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuAppear"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuHide")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuHide"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight0")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight0"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight1")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight1"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight2")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight2"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight3")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight3"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight4")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight4"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight5")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight5"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight6")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight6"));
+	getChild<LLComboBox>("PlayModeUISndPieMenuSliceHighlight7")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndPieMenuSliceHighlight7"));
+	getChild<LLComboBox>("FSPlayTypingSoundComboBox")->setValue((int)gSavedSettings.getBOOL("FSPlayTypingSound")); // Shared with Chat > General > "Hear typing sound when people type in local chat"
+	getChild<LLComboBox>("PlayModeUISndWindowClose")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndWindowClose"));
+	getChild<LLComboBox>("PlayModeUISndWindowOpen")->setValue((int)gSavedSettings.getBOOL("PlayModeUISndWindowOpen"));
+	// Set proper option for Chat > Notifications > "When receiving Instant Messages"
+	getChild<LLComboBox>("WhenPlayIM")->setValue((int)gSavedSettings.getU32("PlayModeUISndNewIncomingIMSession")); // 0, 1, 2
+	getChild<LLComboBox>("WhenPlayGroupIM")->setValue((int)gSavedSettings.getU32("PlayModeUISndNewIncomingGroupIMSession")); // 0, 1, 2
+	// This sound is unused in Firestorm at the moment
+	getChild<LLUICtrl>("UISndObjectDelete")->setEnabled(FALSE);
+	getChild<LLButton>("Def_UISndObjectDelete")->setEnabled(FALSE);
+	getChild<LLComboBox>("PlayModeUISndObjectDelete")->setEnabled(FALSE);
+}
+// </FS:PP>
 
 //[FIX FIRE-1927 - enable DoubleClickTeleport shortcut : SJ]
 //void LLFloaterPreference::onChangeDoubleClickSettings()
@@ -2124,27 +2202,20 @@ BOOL LLPanelPreference::postBuild()
 		getChild<LLRadioGroup>("use_external_browser")->setValue(gSavedSettings.getBOOL("UseExternalBrowser"));
 	}
 	// </FS:Ansariel> Fix for visually broken browser choice radiobuttons
-
-// [SL:KB] - Patch: Misc-Spellcheck | Checked: 2011-09-06 (Catznip-2.8.0a) | Added: Catznip-2.8.0a
-	//////////////////////PanelSpellCheck//////////////////////
-	if (hasChild("checkSpellCheck", TRUE))
-	{
-		std::vector<std::string> dictList;
-		if (LLHunspellWrapper::instance().getInstalledDictionaries(dictList))
-		{
-			LLComboBox* pMainDictionaryList = findChild<LLComboBox>("comboDictionaryMain");
-			for (std::vector<std::string>::const_iterator itDict = dictList.begin(); itDict != dictList.end(); ++itDict)
-				pMainDictionaryList->add(*itDict);
-			pMainDictionaryList->setControlName("SpellCheckDictionary");
-		}
-	}
-// [/SL:KB]
-
+	
 	////////////////////// PanelAlerts ///////////////////
 	if (hasChild("OnlineOfflinetoNearbyChat", TRUE))
 	{
 		getChildView("OnlineOfflinetoNearbyChatHistory")->setEnabled(getChild<LLUICtrl>("OnlineOfflinetoNearbyChat")->getValue().asBoolean());
 	}
+	// <FS:LO> FIRE-7050 - Add a warning to the Growl preference option because of FIRE-6868
+#ifdef LL_WINDOWS
+	if (hasChild("notify_growl_checkbox", TRUE))
+	{
+		getChild<LLCheckBoxCtrl>("notify_growl_checkbox")->setCommitCallback(boost::bind(&showGrowlNotInstalledWarning, _1, _2));
+	}
+#endif
+	// </FS:LO>
 #ifdef HAS_OPENSIM_SUPPORT // <FS:AW optional opensim support/>
 // <FS:AW Disable LSL bridge on opensim>
 	if(LLGridManager::getInstance()->isInOpenSim() && hasChild("UseLSLBridge", TRUE))
@@ -2238,6 +2309,18 @@ void LLPanelPreference::showFavoritesOnLoginWarning(LLUICtrl* checkbox, const LL
 		LLNotificationsUtil::add("FavoritesOnLogin");
 	}
 }
+
+// <FS:LO> FIRE-7050 - Add a warning to the Growl preference option because of FIRE-6868
+#ifdef LL_WINDOWS
+void LLPanelPreference::showGrowlNotInstalledWarning(LLUICtrl* checkbox, const LLSD& value)
+{
+	if (checkbox && checkbox->getValue())
+	{
+		LLNotificationsUtil::add("GrowlNotInstalled",LLSD(), LLSD(), callback_growl_not_installed);
+	}
+}
+#endif
+// </FS:LO>
 
 void LLPanelPreference::cancel()
 {

@@ -375,7 +375,10 @@ BOOL stop_gloderror()
 
 
 LLMeshFilePicker::LLMeshFilePicker(LLModelPreview* mp, S32 lod)
-	: LLFilePickerThread(LLFilePicker::FFLOAD_COLLADA)
+// <FS:CR Threaded Filepickers>
+	//: LLFilePickerThread(LLFilePicker::FFLOAD_COLLADA)
+	: LLLoadFilePickerThread(LLFilePicker::FFLOAD_COLLADA)
+// </FS:CR Threaded Filepickers>
 	{
 		mMP = mp;
 		mLOD = lod;
@@ -398,7 +401,6 @@ mCalculateBtn(NULL)
 	sInstance = this;
 	mLastMouseX = 0;
 	mLastMouseY = 0;
-	mGLName = 0;
 	mStatusLock = new LLMutex(NULL);
 	mModelPreview = NULL;
 
@@ -564,11 +566,6 @@ LLFloaterModelPreview::~LLFloaterModelPreview()
 	if ( mModelPreview )
 	{
 		delete mModelPreview;
-	}
-
-	if (mGLName)
-	{
-		LLImageGL::deleteTextures(1, &mGLName );
 	}
 
 	delete mStatusLock;
@@ -1399,6 +1396,32 @@ LLModelLoader::LLModelLoader( std::string filename, S32 lod, LLModelPreview* pre
 	mJointMap["lThigh"] = "mHipLeft";
 	mJointMap["lShin"] = "mKneeLeft";
 	mJointMap["lFoot"] = "mFootLeft";
+
+// <FS:WF> FIRE-7937 : Patch from Magus Freston - allows ALL bones including all attachment points to be weighted to mesh and animated	
+	mJointMap["Right_Ear"] = "Right Ear";
+    mJointMap["Left_Ear"] = "Left Ear";
+    mJointMap["Right_Eyeball"] = "Right Eyeball";
+    mJointMap["Left_Eyeball"] = "Left Eyeball";
+    mJointMap["Right_Shoulder"] = "Right Shoulder";
+    mJointMap["Left_Shoulder"] = "Left Shoulder";
+    mJointMap["R_Upper_Arm"] = "R Upper Arm";
+    mJointMap["L_Upper_Arm"] = "L Upper Arm";
+    mJointMap["R_Forearm"] = "R Forearm";
+    mJointMap["L_Forearm"] = "L Forearm";
+    mJointMap["Right_Hand"] = "Right Hand";
+    mJointMap["Left_Hand"] = "Left Hand";
+    mJointMap["Right_Pec"] = "Right Pec";
+    mJointMap["Left_Pec"] = "Left Pec";
+    mJointMap["Avatar_Center"] = "Avatar Center";
+    mJointMap["Right_Hip"] = "Right Hip";
+    mJointMap["Left_Hip"] = "Left Hip";
+    mJointMap["R_Upper_Leg"] = "R Upper Leg";
+    mJointMap["L_Upper_Leg"] = "L Upper Leg";
+    mJointMap["R_Lower_Leg"] = "R Lower Leg";
+    mJointMap["R_Lower_Leg"] = "R Lower Leg";
+    mJointMap["Right_Foot"] = "Right Foot";
+    mJointMap["Left_Foot"] = "Left Foot";
+// <FS:WF> FIRE-7937 end
 
 	if (mPreview)
 	{
@@ -5098,15 +5121,7 @@ BOOL LLModelPreview::render()
 
 	LLRect preview_rect;
 
-	LLFloaterModelWizard* floater_wizard = dynamic_cast<LLFloaterModelWizard*>(mFMP);
-	if (floater_wizard)
-	{
-		preview_rect = floater_wizard->getPreviewRect();
-	}
-	else
-	{
-		preview_rect = mFMP->getChildView("preview_panel")->getRect();
-	}
+	preview_rect = mFMP->getChildView("preview_panel")->getRect();
 
 	F32 aspect = (F32) preview_rect.getWidth()/preview_rect.getHeight();
 
@@ -5659,7 +5674,6 @@ void LLModelPreview::setPreviewLOD(S32 lod)
 		combo_box->setCurrentByIndex((NUM_LOD-1)-mPreviewLOD); // combo box list of lods is in reverse order
 		mFMP->childSetText("lod_file_" + lod_name[mPreviewLOD], mLODFile[mPreviewLOD]);
 
-		// the wizard has three lod drop downs
 		LLComboBox* combo_box2 = mFMP->getChild<LLComboBox>("preview_lod_combo2");
 		combo_box2->setCurrentByIndex((NUM_LOD-1)-mPreviewLOD); // combo box list of lods is in reverse order
 		

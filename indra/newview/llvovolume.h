@@ -79,7 +79,7 @@ public:
 	virtual bool isVolumeGlobal() const = 0; // Are we in global space?
 	virtual bool isActive() const = 0; // Is this object currently active?
 	virtual const LLMatrix4& getWorldMatrix(LLXformMatrix* xform) const = 0;
-	virtual void updateRelativeXform() = 0;
+	virtual void updateRelativeXform(bool force_identity = false) = 0;
 	virtual U32 getID() const = 0;
 	virtual void preRebuild() = 0;
 };
@@ -175,6 +175,7 @@ public:
 
 	/*virtual*/ void	setScale(const LLVector3 &scale, BOOL damped);
 
+	/*virtual*/ void    changeTEImage(S32 index, LLViewerTexture* new_image)  ;
 	/*virtual*/ void	setNumTEs(const U8 num_tes);
 	/*virtual*/ void	setTEImage(const U8 te, LLViewerTexture *imagep);
 	/*virtual*/ S32		setTETexture(const U8 te, const LLUUID &uuid);
@@ -204,7 +205,7 @@ public:
 														  LLAssetType::EType type,
 														  void* user_data, S32 status, LLExtStat ext_status);
 					
-				void	updateRelativeXform();
+				void	updateRelativeXform(bool force_identity = false);
 	/*virtual*/ BOOL	updateGeometry(LLDrawable *drawable);
 	/*virtual*/ void	updateFaceSize(S32 idx);
 	/*virtual*/ BOOL	updateLOD();
@@ -342,7 +343,8 @@ public:
 	F32 mVolumeSurfaceArea; // ZK LBG
 private:
 	friend class LLDrawable;
-	
+	friend class LLFace;
+
 	BOOL		mFaceMappingChanged;
 	LLFrameTimer mTextureUpdateTimer;
 	S32			mLOD;

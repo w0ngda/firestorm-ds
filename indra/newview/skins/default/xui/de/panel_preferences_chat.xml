@@ -30,8 +30,9 @@
 				<radio_item label="Groß" name="consradio3"/>
 				<radio_item label="Riesig" name="consradio4"/>
 			</radio_group>
+			<check_box label="Gruppenchats, IM-Sitzungen und Chat in der Nähe immer in Großbuchstaben anzeigen" name="chat_always_in_uppercase"/>
 			<check_box label="Chateingabe nach Drücken der Returntaste beenden" name="CloseChatOnReturn"/>
-			<check_box initial_value="true" label="Beim Chatten Tippanimation abspielen" name="play_typing_animation"/>
+			<check_box label="Beim Chatten Tippanimation abspielen" name="play_typing_animation"/>
 			<check_box label="Beim Chatten Avataranimation abspielen, z.B. für Rufen" name="play_avatar_animations"/>
 			<check_box label="Tipp-Sound abspielen wenn Personen im Chat in der Nähe tippen" name="play_typing_sound"/> 
 			<check_box label="Andere Avatare während IM-Sitzungen benachrichtigen, wenn ich schreibe" name="FSSendTypingState"/>
@@ -103,6 +104,22 @@
 			<spinner tool_tip="0.25-1.0, 0.25 für maximales Ausblenden für 1 für kein Ausblenden" name="FSIMChatHistoryFade"/>
 			<check_box name="FSAnnounceIncomingIM" label="Eingehende Instant Messages ankünden sobald Sender zu schreiben beginnt"/>
 			<check_box name="FSIMChatFlashOnFriendStatusChange" label="Blinkende IM-Reiter, wenn Freunde sich an- oder abmelden"/>
+			<text name="WhenPlayIMLabel" width="205">
+				Beim Eintreffen von Instant Messages:
+			</text>
+			<combo_box name="WhenPlayIM" width="265">
+				<combo_box.item label="Klang nur bei neuer IM-Sitzung abspielen" name="1"/>
+				<combo_box.item label="Klang bei jeder IM abspielen" name="2"/>
+				<combo_box.item label="Keinen Klang abspielen" name="0"/>
+			</combo_box>
+			<text name="WhenPlayGroupIMLabel" width="205">
+				Beim Eintreffen von Gruppenchats:
+			</text>
+			<combo_box name="WhenPlayGroupIM" width="265">
+				<combo_box.item label="Klang nur bei neuer Sitzung abspielen" name="1"/>
+				<combo_box.item label="Klang bei jeder Nachricht abspielen" name="2"/>
+				<combo_box.item label="Keinen Klang abspielen" name="0"/>
+			</combo_box>
         </panel>
 		
         <!-- Chat: Firestorm -->
@@ -211,15 +228,8 @@
 
         <!-- Chat: Text Input -->
         <panel label="Texteingabe" name="ChatTextInput">
-            <check_box label="Rechtschreibprüfung aktivieren" name="checkSpellCheck" width="200"/>
-            <text name="textDictionaryMain" width="105">
-                Haupt-Wörterbuch:
-            </text>
-            <check_box label="Auto-Korrektur" name="lgg_ac_enable"
-             tool_tip="Muss aktiviert sein um die Einstellungen für die Auto-Korrektur nutzen zu können"/>
-            <button name="lgg_ac_showgui" label="Auto-Korrektur-Einstellungen"
-             width="170">
-            </button>
+			<button name="autoreplace_showgui" label="Automatische Ersetzung..."/>
+			<button name="spellcheck_showgui" label="Rechtschreibprüfung..."/>
         </panel>
 
 	</tab_container>

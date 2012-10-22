@@ -145,6 +145,15 @@
             </radio_group>
 
             <check_box
+             control_name="FSChatsUppercase"
+             height="16"
+             label="Display Group chats, IM sessions and nearby chat always in uppercase"
+             layout="topleft"
+             left="30"
+             name="chat_always_in_uppercase"
+             top_pad="5"
+             width="400" />
+            <check_box
              control_name="PlayTypingAnim"
              height="16"
              initial_value="true"
@@ -387,7 +396,7 @@
             <button
                follows="left|top"
                height="23"
-               label="Chat Translation Settings"
+               label="Translation..."
                layout="topleft"
                left="30"
                name="translation_settings_btn"
@@ -478,7 +487,7 @@
              follows="left|top"
              height="20"
              increment="1"
-             initial_val="0"
+             initial_value="0"
              tool_tip="-1 for full group name, 0 for disabled"
              left_pad="3"
              max_val="63"
@@ -531,7 +540,7 @@
              follows="left|top"
              height="20"
              increment="0.01"
-             initial_val="0.5"
+             initial_value="0.5"
              tool_tip="0.25-1.0, 0.25 for a lot of fade, 1 for no fade"
              left_pad="3"
              max_val="1.0"
@@ -560,6 +569,70 @@
              name="FSIMChatFlashOnFriendStatusChange"
              control_name="FSIMChatFlashOnFriendStatusChange"
              label="Flash IM tabs when friends come online or go offline"/>
+			 
+            <text
+             follows="left|top"
+             layout="topleft"
+             left="30"
+             height="20"
+             name="WhenPlayIMLabel"
+             width="220"
+             top_pad="15">
+              When receiving Instant Messages:
+            </text>
+            <combo_box
+             left_pad="5"
+             top_delta="-3"
+             height="20"
+             layout="topleft"
+             control_name="PlayModeUISndNewIncomingIMSession"
+             name="WhenPlayIM"
+             width="245">
+                <combo_box.item
+                 label="Play sound only on new IM session"
+                 name="1"
+                 value="1"/>
+                <combo_box.item
+                 label="Play sound on every message received"
+                 name="2"
+                 value="2"/>
+                <combo_box.item
+                 label="Don't play any notification sound"
+                 name="0"
+                 value="0"/>
+            </combo_box>
+			
+            <text
+             follows="left|top"
+             layout="topleft"
+             left="30"
+             height="20"
+             name="WhenPlayGroupIMLabel"
+             width="220"
+             top_pad="5">
+              When receiving Group Instant Messages:
+            </text>
+            <combo_box
+             left_pad="5"
+             top_delta="-3"
+             height="20"
+             layout="topleft"
+             control_name="PlayModeUISndNewIncomingGroupIMSession"
+             name="WhenPlayGroupIM"
+             width="245">
+                <combo_box.item
+                 label="Play sound only on new IM session"
+                 name="1"
+                 value="1"/>
+                <combo_box.item
+                 label="Play sound on every message received"
+                 name="2"
+                 value="2"/>
+                <combo_box.item
+                 label="Don't play any notification sound"
+                 name="0"
+                 value="0"/>
+            </combo_box>
 
         </panel>
 
@@ -704,8 +777,6 @@
              height="20"             
              left_pad="10"
              top_delta="-3"
-             min_value="0.0"
-             max_value="7.0" 
              name="mod_name_style"
              width="170">
             <combo_box.item
@@ -758,8 +829,6 @@
              height="20"
              left_pad="10"
              top_delta="-3"
-             min_value="0.0"
-             max_value="7.0" 
              name="mod_text_style"
              width="170">
             <combo_box.item
@@ -885,7 +954,7 @@
              follows="left|top"
              height="20"
              increment="1"
-             initial_val="10"
+             initial_value="10"
              label="Fade chat after"
              label_width="90"
              left="35"
@@ -907,7 +976,7 @@
              follows="left|top"
              height="20"
              increment="1"
-             initial_val="10"
+             initial_value="10"
              left_pad="0"
              max_val="50"
              min_val="1"
@@ -1067,7 +1136,6 @@
              top_delta="25"
              left="20"
              height="20"
-             max_length="256"
              name="FSKeywords"
              control_name="FSKeywords"
              width="450"/>
@@ -1121,79 +1189,43 @@
              follows="left|top"
              left_pad="5"
              height="20"
-             max_length="256"
+             max_length_chars="256"
              name="FSKeywordSound"
              control_name="FSKeywordSound"
              width="250"/>
         </panel>
 
         <!-- Chat: Text Input -->
-        <panel
-         border="true"
-         top_pad="1"
-         bottom="-1"
-         left="1"
-         right="-1"
-         follows="all"
-         label="Text Input"
-         name="ChatTextInput" >
-
-            <check_box
-             control_name="SpellCheck"
-             enabled="true"
-             follows="top|left"
-             height="16"
-             label="Enable spell checking"
-             layout="topleft"
-             left="30"
-             name="checkSpellCheck"
-             top="30"
-             width="150" />
-            <text
-             enabled_control="SpellCheck"
-             follows="top|left"
-             height="10"
-             layout="topleft"
-             left_pad="10"
-             mouse_opaque="false"
-             name="textDictionaryMain"
-             top_pad="-16"
-             type="string"
-             width="90" >
-                Main dictionary:
-            </text>
-            <combo_box
-             enabled_control="SpellCheck"
-             follows="top|left"
-             height="23"
-             layout="topleft"
-             left_pad="10"
-             name="comboDictionaryMain"
-             top_pad="-15"
-             width="175" />
-
-            <check_box
-             top_pad="20"
-             left="30"
-             height="16"
-             width="140"
-             follows="left|top"
-             layout="topleft"
-             label="Enable Autocorrect"
-             control_name="FSEnableAutoCorrect"
-             name="lgg_ac_enable"
-             tool_tip="You must have this check box enabled to use any of these settings, it will search your writable text entry, and replace any of the search entries with their replacement"/>
-            <button
-             follows="top|left"
-             height="20"
-             layout="topleft"
-             top_pad="-20"
-             left_pad="5"
-             name="lgg_ac_showgui"
-             commit_callback.function="FSPref.ShowAC"
-             label="AutoCorrect Settings"
-             width="150">
-            </button>
-        </panel>
+  <panel
+   border="true"
+   top_pad="1"
+   bottom="-1"
+   left="1"
+   right="-1"
+   follows="all"
+   label="Text Input"
+   name="ChatTextInput" >
+    <button
+     layout="topleft"
+     follows="left|top"
+     top="10"
+     left="20"
+     width="150"
+     height="20"
+     name="autoreplace_showgui"
+     commit_callback.function="Pref.AutoReplace"
+     label="Auto-Replace...">
+    </button>
+    <button
+     follows="top|left"
+     height="23"
+     layout="topleft"
+     left_pad="5"
+     name="spellcheck_showgui"
+     commit_callback.function="Pref.SpellChecker"
+     label="Spell Checking..."
+     width="150">
+    </button>
+  </panel>
 </tab_container>
 </panel>

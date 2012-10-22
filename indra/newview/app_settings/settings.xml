@@ -816,18 +816,6 @@
       <integer>0</integer>
     </map>
 
-  <key>PlayTeleportSound</key>
-    <map>
-      <key>Comment</key>
-      <string>Play the whoosh teleport sound</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-
   <key>AvatarSitOnAway</key>
     <map>
       <key>Comment</key>
@@ -839,39 +827,6 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-  <key>FSEnableAutoCorrect</key>
-	<map>
-		<key>Comment</key>
-		<string>whether to enable autocorrect or not</string>
-		<key>Persist</key>
-		<integer>1</integer>
-		<key>Type</key>
-		<string>Boolean</string>
-		<key>Value</key>
-		<integer>0</integer>
-	</map>
-  <key>FSAutoCorrectCount</key>
-	<map>
-		<key>Comment</key>
-		<string>How many words have been auto replaced.</string>
-		<key>Persist</key>
-		<integer>1</integer>
-		<key>Type</key>
-		<string>S32</string>
-		<key>Value</key>
-		<integer>0</integer>
-	</map>
-  <key>FSCmdLineAutocorrect</key>
-	<map>
-		<key>Comment</key>
-		<string>Command for adding new entries to autocorrect</string>
-		<key>Persist</key>
-		<integer>1</integer>
-		<key>Type</key>
-		<string>String</string>
-		<key>Value</key>
-		<string>/addac</string>
-	</map>
   <key>FSUseNearbyChatConsole</key>
   <map>
     <key>Comment</key>
@@ -1431,17 +1386,6 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>AvatarZOffset</key>
-    <map>
-      <key>Comment</key>
-      <string>Height offset the avatar.</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
     <key>RestrainedLoveReplaceWhenFolderBeginsWith</key>
     <map>
       <key>Comment</key>
@@ -1786,7 +1730,7 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>ApplyTextureImmediately</key>
+    <key>TextureLivePreview</key>
     <map>
       <key>Comment</key>
       <string>Preview selections in texture picker immediately</string>
@@ -2017,6 +1961,17 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>1</integer>
+    </map>
+    <key>AutoReplace</key>
+    <map>
+      <key>Comment</key>
+      <string>Replaces keywords with a configured word or phrase</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
     </map>
   <key>AutoAcceptNewInventory</key>
     <map>
@@ -3204,7 +3159,7 @@
     <key>ChatFontSize</key>
     <map>
       <key>Comment</key>
-      <string>Size of chat text in chat floater (0 to 2, small to large)</string>
+      <string>Size of chat text in chat floater (0 to 3, small to huge)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -3215,7 +3170,7 @@
     <key>ChatConsoleFontSize</key>
     <map>
       <key>Comment</key>
-      <string>Size of chat text in chat console (0 to 2, small to large)</string>
+      <string>Size of chat text in chat console (0 to 3, small to huge)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -4359,6 +4314,17 @@
       <key>Value</key>
       <integer>-1</integer>
     </map>
+    <key>DebugStatModeSimSimAIStepMsec</key>
+    <map>
+      <key>Comment</key>
+      <string>Mode of stat in Statistics floater</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>-1</integer>
+    </map>
     <key>DebugStatModeSimSimPhysicsMsec</key>
     <map>
       <key>Comment</key>
@@ -4371,6 +4337,28 @@
       <integer>-1</integer>
     </map>
     <key>DebugStatModeSimSimOtherMsec</key>
+    <map>
+      <key>Comment</key>
+      <string>Mode of stat in Statistics floater</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>-1</integer>
+    </map>
+    <key>DebugStatModeSimSimSkippedSilhouettSteps</key>
+    <map>
+      <key>Comment</key>
+      <string>Mode of stat in Statistics floater</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>-1</integer>
+    </map>
+    <key>DebugStatModeSimSimPCTSteppedCharacters</key>
     <map>
       <key>Comment</key>
       <string>Mode of stat in Statistics floater</string>
@@ -6121,6 +6109,17 @@
         <key>Value</key>
         <integer>0</integer>
     </map>
+    <key>InventoryInboxToggleState</key>
+    <map>
+        <key>Comment</key>
+        <string>Stores the open/closed state of inventory Received items panel</string>
+        <key>Persist</key>
+        <integer>1</integer>
+        <key>Type</key>
+        <string>Boolean</string>
+        <key>Value</key>
+        <integer>0</integer>
+    </map>
 	<key>InventoryLinking</key>
 	<map>
 		<key>Comment</key>
@@ -6990,7 +6989,7 @@
     <key>LoginLocation</key>
     <map>
       <key>Comment</key>
-      <string>Login location ('last', 'home')</string>
+      <string>Default Login location ('last', 'home') preference</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -8183,7 +8182,7 @@
     <key>NextLoginLocation</key>
     <map>
       <key>Comment</key>
-      <string>Location to log into by default.</string>
+      <string>Location to log into for this session - set from command line or the login panel, cleared following a successfull login.</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -8459,17 +8458,6 @@ Change of this parameter will affect the layout of buttons in notification toast
     <map>
       <key>Comment</key>
       <string>Number of successful logins to Second Life</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>S32</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>NumpadControl</key>
-    <map>
-      <key>Comment</key>
-      <string>How numpad keys control your avatar. 0 = Like the normal arrow keys, 1 = Numpad moves avatar when numlock is off, 2 = Numpad moves avatar regardless of numlock (use this if you have no numlock)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -9428,7 +9416,7 @@ Change of this parameter will affect the layout of buttons in notification toast
     <key>WebContentWindowLimit</key>
     <map>
       <key>Comment</key>
-      <string>Maximum number of web brower windows that can be open at once in the Web content floater (0 for no limit)</string>
+      <string>Maximum number of web browser windows that can be open at once in the Web content floater (0 for no limit)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -10247,6 +10235,18 @@ Change of this parameter will affect the layout of buttons in notification toast
     <real>0</real>
   </map>
 
+  <key>RenderDepthPrePass</key>
+  <map>
+    <key>Comment</key>
+    <string>EXPERIMENTAL: Prime the depth buffer with simple prim geometry before rendering with textures.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+  
   <key>RenderDepthOfField</key>
   <map>
     <key>Comment</key>
@@ -11337,7 +11337,7 @@ Change of this parameter will affect the layout of buttons in notification toast
     <key>RenderUseVAO</key>
     <map>
       <key>Comment</key>
-      <string>Use GL Vertex Array Objects</string>
+      <string>[EXPERIMENTAL] Use GL Vertex Array Objects</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -11345,7 +11345,19 @@ Change of this parameter will affect the layout of buttons in notification toast
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>RenderVBOMappingDisable</key>
+  <key>RenderUseTransformFeedback</key>
+  <map>
+    <key>Comment</key>
+    <string>[EXPERIMENTAL] Use transform feedback shaders for LoD updates</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+
+  <key>RenderVBOMappingDisable</key>
     <map>
       <key>Comment</key>
       <string>Disable VBO glMapBufferARB</string>
@@ -13261,7 +13273,8 @@ Change of this parameter will affect the layout of buttons in notification toast
       <string>F32</string>
       <key>Value</key>
       <real>0.1</real>
-    </map>   <key>ToolTipFadeTime</key>
+    </map>
+    <key>ToolTipFadeTime</key>
     <map>
       <key>Comment</key>
       <string>Seconds over which tooltip fades away</string>
@@ -14042,6 +14055,28 @@ Change of this parameter will affect the layout of buttons in notification toast
       <key>Value</key>
       <integer>0</integer>
     </map>
+    <key>UISndFriendOffline</key>
+    <map>
+      <key>Comment</key>
+      <string>Sound file for friends going offline (uuid for sound asset)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>ed124764-705d-d497-167a-182cd9fa2e6c</string>
+    </map>
+    <key>UISndFriendOnline</key>
+    <map>
+      <key>Comment</key>
+      <string>Sound file for friends coming online (uuid for sound asset)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>ed124764-705d-d497-167a-182cd9fa2e6c</string>
+    </map>
     <key>UISndHealthReductionF</key>
     <map>
       <key>Comment</key>
@@ -14089,7 +14124,7 @@ Change of this parameter will affect the layout of buttons in notification toast
     <key>UISndMoneyChangeDown</key>
     <map>
       <key>Comment</key>
-      <string>Sound file for L$ balance increase (uuid for sound asset)</string>
+      <string>Sound file for L$ balance decrease (uuid for sound asset)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -14111,7 +14146,7 @@ Change of this parameter will affect the layout of buttons in notification toast
     <key>UISndMoneyChangeUp</key>
     <map>
       <key>Comment</key>
-      <string>Sound file for L$ balance decrease(uuid for sound asset)</string>
+      <string>Sound file for L$ balance increase (uuid for sound asset)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -14123,6 +14158,17 @@ Change of this parameter will affect the layout of buttons in notification toast
     <map>
       <key>Comment</key>
       <string>Sound file for new instant message session(uuid for sound asset)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>67cc2844-00f3-2b3c-b991-6418d01e1bb7</string>
+    </map>
+    <key>UISndNewIncomingGroupIMSession</key>
+    <map>
+      <key>Comment</key>
+      <string>Sound file for new group instant message session(uuid for sound asset)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -14321,6 +14367,17 @@ Change of this parameter will affect the layout of buttons in notification toast
 		</map>
 <!-- ## Zi: Pie menu -->
 
+    <key>UISndRegionRestart</key>
+    <map>
+      <key>Comment</key>
+      <string>Sound file for the region restart alert (uuid for sound asset)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>4174f859-0d3d-c517-c424-72923dc21f65</string>
+    </map>
     <key>UISndSnapshot</key>
     <map>
       <key>Comment</key>
@@ -14813,6 +14870,17 @@ Change of this parameter will affect the layout of buttons in notification toast
       <key>SanityComment</key>
       <string>Disabling this option might lead to severely degraded viewer performance and increased rezzing time.</string>
     </map>
+  <key>RenderSynchronousOcclusion</key>
+  <map>
+    <key>Comment</key>
+    <string>Don't let occlusion queries get more than one frame behind (block until they complete).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
     <key>RenderDelayVBUpdate</key>
     <map>
       <key>Comment</key>
@@ -14860,13 +14928,13 @@ Change of this parameter will affect the layout of buttons in notification toast
     <key>SpellCheckDictionary</key>
     <map>
       <key>Comment</key>
-      <string>Current dictionary used for spell checking</string>
+      <string>Current primary and secondary dictionaries used for spell checking</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
       <string>String</string>
       <key>Value</key>
-      <string>English (United States)</string>
+      <string>English (United States),Second Life Glossary</string>
     </map>
     <key>UseNewWalkRun</key>
     <map>
@@ -16006,17 +16074,6 @@ Change of this parameter will affect the layout of buttons in notification toast
 			<string>String</string>
 			<key>Value</key>
 			<string>cao</string>
-		</map>
-		<key>FSCmdLineAutocorrect</key>
-		<map>
-			<key>Comment</key>
-			<string>Command for adding new entries to autocorrect</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>String</string>
-			<key>Value</key>
-			<string>/addac</string>
 		</map>
 		<key>FSCmdLineMedia</key>
 		<map>
@@ -18262,6 +18319,515 @@ Change of this parameter will affect the layout of buttons in notification toast
       <key>Value</key>
       <integer>1</integer>
     </map>
+    <key>FSCollisionMessagesInChat</key>
+    <map>
+      <key>Comment</key>
+      <string>Shows collision messages in nearby chat.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSReportCollisionMessages</key>
+    <map>
+      <key>Comment</key>
+      <string>Report collision messages to scripts.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSReportCollisionMessagesChannel</key>
+    <map>
+      <key>Comment</key>
+      <string>The channel used to report collision messages to scripts.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>-25000</integer>
+    </map>
+	
+    <!-- Start: Prefs > Sound/Media > UI Sounds -->
+    <key>PlayModeUISndAlert</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndAlert.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndBadKeystroke</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndBadKeystroke.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndClick</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndClick.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndClickRelease</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndClickRelease.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndFriendOffline</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndFriendOffline.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>PlayModeUISndFriendOnline</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndFriendOnline.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>PlayModeUISndHealthReductionF</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndHealthReductionF.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndHealthReductionM</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndHealthReductionM.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndInvalidOp</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndInvalidOp.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndMoneyChangeDown</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndMoneyChangeDown.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndMoneyChangeUp</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndMoneyChangeUp.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndNewIncomingIMSession</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndNewIncomingIMSession. 0 = Mute this sound, 1 = Play only on new session, 2 = Play on every message.  This setting is shared with Chat &gt; Notifications &gt; 'When receiving Instant Messages'.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndNewIncomingGroupIMSession</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndNewIncomingGroupIMSession. 0 = Mute this sound, 1 = Play only on new session, 2 = Play on every message.  This setting is shared with Chat &gt; Notifications &gt; 'When receiving Group Instant Messages'.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndStartIM</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndStartIM.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndObjectCreate</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndObjectCreate.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndObjectDelete</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndObjectDelete.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>PlayModeUISndObjectRezIn</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndObjectRezIn.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndObjectRezOut</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndObjectRezOut.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndTeleportOut</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - PlayModeUISndTeleportOut. Plays the whoosh teleport sound!</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndRegionRestart</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndRegionRestart.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuAppear</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuAppear.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuHide</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuHide.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight0</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight0.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight1</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight1.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight2</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight2.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight3</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight3.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight4</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight4.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight5</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight5.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight6</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight6.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndPieMenuSliceHighlight7</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndPieMenuSliceHighlight7.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndWindowClose</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndWindowClose.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>PlayModeUISndWindowOpen</key>
+    <map>
+      <key>Comment</key>
+      <string>Holds state for Prefs &gt; Sound/Media &gt; UI Sounds - UISndWindowOpen.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <!-- End: Prefs > Sound/Media => UI Sounds -->
   
+    <key>FSShowVoiceVisualizer</key>
+    <map>
+      <key>Comment</key>
+      <string>Hides the voice dot over avatars if disabled.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>FSSelectIncludeGroupOwned</key>
+    <map>
+      <key>Comment</key>
+      <string>Includes group-owned objects during selection</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>FSVintageLoginInfo</key>
+    <map>
+      <key>Comment</key>
+      <string>Shows the "did you know about Phoenix mode?" message at login screen, once per installation. TRUE means, that notification won't be displayed.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSShowMutedChatHistory</key>
+    <map>
+      <key>Comment</key>
+      <string>Shows the muted text in nearby chat history if enabled.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSCrouchToggle</key>
+    <map>
+      <key>Comment</key>
+      <string>Enables using the crouch key as a toggle.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSCrouchToggleStatus</key>
+    <map>
+      <key>Comment</key>
+      <string>Status of crouch toggle.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>FSPlayCollisionSounds</key>
+    <map>
+      <key>Comment</key>
+      <string>Play collision sounds.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>FSFadeAudioStream</key>
+    <map>
+      <key>Comment</key>
+      <string>Use fading when changing the parcel audio stream.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>FSAudioMusicFadeIn</key>
+      <map>
+      <key>Comment</key>
+      <string>Fade in time in seconds for music streams</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>3.0</real>
+    </map>
+    <key>FSAudioMusicFadeOut</key>
+      <map>
+      <key>Comment</key>
+      <string>Fade out time in seconds for music streams</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>2.0</real>
+    </map>
+    <key>FSChatsUppercase</key>
+    <map>
+      <key>Comment</key>
+      <string>Group chats, IM sessions and nearby chat always in uppercase.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
 </map>
 </llsd>

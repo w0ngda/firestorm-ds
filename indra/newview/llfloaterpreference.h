@@ -120,6 +120,8 @@ protected:
 	void updateClickActionSettings();
 	// updates click/double-click action controls depending on values from settings.xml
 	void updateClickActionControls();
+	// <FS:PP> updates UI Sounds controls depending on values from settings.xml
+	void updateUISoundsControls();
 	
 	// ## Zi: Optional Edit Appearance Lighting
 	// make sure controls get greyed out or enabled when appearance camera movement is toggled
@@ -186,6 +188,8 @@ public:
 	void onClickSortContacts();
 	void onClickProxySettings();
 	void onClickTranslationSettings();
+	void onClickAutoReplace();
+	void onClickSpellChecker();
 	void applyUIColor(LLUICtrl* ctrl, const LLSD& param);
 	void getUIColor(LLUICtrl* ctrl, const LLSD& param);
 	
@@ -240,6 +244,12 @@ private:
 
  	//for "Show my Favorite Landmarks at Login"
 	static void showFavoritesOnLoginWarning(LLUICtrl* checkbox, const LLSD& value);
+
+	// <FS:LO> FIRE-7050 - Add a warning to the Growl preference option because of FIRE-6868
+#ifdef LL_WINDOWS
+	static void showGrowlNotInstalledWarning(LLUICtrl* checkbox, const LLSD& value);
+#endif
+	// </FS:LO>
 
 	typedef std::map<std::string, LLColor4> string_color_map_t;
 	string_color_map_t mSavedColors;

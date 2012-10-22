@@ -40,9 +40,6 @@
 #include "llinventorypanel.h"
 #include "llnotifications.h"
 #include "llnotificationsutil.h"
-// [SL:KB] - Patch: Misc-Spellcheck | Checked: 2010-12-19 (Catznip-2.5.0a)
-#include "llspellcheckmenuhandler.h"
-// [/SL:KB]
 
 // newview includes
 #include "llagent.h"
@@ -93,6 +90,7 @@
 #include "llrootview.h"
 #include "llsceneview.h"
 #include "llselectmgr.h"
+#include "llspellcheckmenuhandler.h"
 #include "llstatusbar.h"
 #include "lltextureview.h"
 #include "lltoolcomp.h"
@@ -348,7 +346,6 @@ BOOL enable_buy_land(void*);
 
 void handle_test_male(void *);
 void handle_test_female(void *);
-void handle_toggle_pg(void*);
 void handle_dump_attachments(void *);
 void handle_dump_avatar_local_textures(void*);
 void handle_debug_avatar_textures(void*);
@@ -871,7 +868,7 @@ class LLAdvancedToggleRenderType : public view_listener_t
 		U32 render_type = render_type_from_string( userdata.asString() );
 		if ( render_type != 0 )
 		{
-			LLPipeline::toggleRenderTypeControl( (void*)render_type );
+			LLPipeline::toggleRenderTypeControl( (void*)(ptrdiff_t)render_type );
 		}
 		return true;
 	}
@@ -887,7 +884,7 @@ class LLAdvancedCheckRenderType : public view_listener_t
 
 		if ( render_type != 0 )
 		{
-			new_value = LLPipeline::hasRenderTypeControl( (void*)render_type );
+			new_value = LLPipeline::hasRenderTypeControl( (void*)(ptrdiff_t)render_type );
 		}
 
 		return new_value;
@@ -946,7 +943,7 @@ class LLAdvancedToggleFeature : public view_listener_t
 		U32 feature = feature_from_string( userdata.asString() );
 		if ( feature != 0 )
 		{
-			LLPipeline::toggleRenderDebugFeature( (void*)feature );
+			LLPipeline::toggleRenderDebugFeature( (void*)(ptrdiff_t)feature );
 		}
 		return true;
 	}
@@ -961,7 +958,7 @@ class LLAdvancedCheckFeature : public view_listener_t
 
 	if ( feature != 0 )
 	{
-		new_value = LLPipeline::toggleRenderDebugFeatureControl( (void*)feature );
+		new_value = LLPipeline::toggleRenderDebugFeatureControl( (void*)(ptrdiff_t)feature );
 	}
 
 	return new_value;
@@ -1173,7 +1170,7 @@ class LLAdvancedToggleInfoDisplay : public view_listener_t
 		
 		if ( info_display != 0 )
 		{
-			LLPipeline::toggleRenderDebug( (void*)info_display );
+			LLPipeline::toggleRenderDebug( (void*)(ptrdiff_t)info_display );
 		}
 
 		return true;
@@ -1192,7 +1189,7 @@ class LLAdvancedCheckInfoDisplay : public view_listener_t
 
 		if ( info_display != 0 )
 		{
-			new_value = LLPipeline::toggleRenderDebugControl( (void*)info_display );
+			new_value = LLPipeline::toggleRenderDebugControl( (void*)(ptrdiff_t)info_display );
 		}
 
 		return new_value;
@@ -1798,23 +1795,6 @@ class LLAdvancedTestFemale : public view_listener_t
 	}
 };
 
-
-
-///////////////
-// TOGGLE PG //
-///////////////
-
-
-class LLAdvancedTogglePG : public view_listener_t
-{
-	bool handleEvent(const LLSD& userdata)
-	{
-		handle_toggle_pg(NULL);
-		return true;
-	}
-};
-
-
 class LLAdvancedForceParamsToDefault : public view_listener_t
 {
 	bool handleEvent(const LLSD& userdata)
@@ -2277,7 +2257,6 @@ class LLAdvancedCompressImage : public view_listener_t
 		return true;
 	}
 };
-
 
 
 /////////////////////////
@@ -5894,6 +5873,78 @@ class LLEditDelete : public view_listener_t
 	}
 };
 
+void handle_spellcheck_replace_with_suggestion(const LLUICtrl* ctrl, const LLSD& param)
+{
+	const LLContextMenu* menu = dynamic_cast<const LLContextMenu*>(ctrl->getParent());
+	LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	if ( (!spellcheck_handler) || (!spellcheck_handler->getSpellCheck()) )
+	{
+		return;
+	}
+
+	U32 index = 0;
+	if ( (!LLStringUtil::convertToU32(param.asString(), index)) || (index >= spellcheck_handler->getSuggestionCount()) )
+	{
+		return;
+	}
+
+	spellcheck_handler->replaceWithSuggestion(index);
+}
+
+bool visible_spellcheck_suggestion(LLUICtrl* ctrl, const LLSD& param)
+{
+	LLMenuItemGL* item = dynamic_cast<LLMenuItemGL*>(ctrl);
+	const LLContextMenu* menu = (item) ? dynamic_cast<const LLContextMenu*>(item->getParent()) : NULL;
+	const LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<const LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	if ( (!spellcheck_handler) || (!spellcheck_handler->getSpellCheck()) )
+	{
+		return false;
+	}
+
+	U32 index = 0;
+	if ( (!LLStringUtil::convertToU32(param.asString(), index)) || (index >= spellcheck_handler->getSuggestionCount()) )
+	{
+		return false;
+	}
+
+	item->setLabel(spellcheck_handler->getSuggestion(index));
+	return true;
+}
+
+void handle_spellcheck_add_to_dictionary(const LLUICtrl* ctrl)
+{
+	const LLContextMenu* menu = dynamic_cast<const LLContextMenu*>(ctrl->getParent());
+	LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	if ( (spellcheck_handler) && (spellcheck_handler->canAddToDictionary()) )
+	{
+		spellcheck_handler->addToDictionary();
+	}
+}
+
+bool enable_spellcheck_add_to_dictionary(const LLUICtrl* ctrl)
+{
+	const LLContextMenu* menu = dynamic_cast<const LLContextMenu*>(ctrl->getParent());
+	const LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<const LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	return (spellcheck_handler) && (spellcheck_handler->canAddToDictionary());
+}
+
+void handle_spellcheck_add_to_ignore(const LLUICtrl* ctrl)
+{
+	const LLContextMenu* menu = dynamic_cast<const LLContextMenu*>(ctrl->getParent());
+	LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	if ( (spellcheck_handler) && (spellcheck_handler->canAddToIgnore()) )
+	{
+		spellcheck_handler->addToIgnore();
+	}
+}
+
+bool enable_spellcheck_add_to_ignore(const LLUICtrl* ctrl)
+{
+	const LLContextMenu* menu = dynamic_cast<const LLContextMenu*>(ctrl->getParent());
+	const LLSpellCheckMenuHandler* spellcheck_handler = (menu) ? dynamic_cast<const LLSpellCheckMenuHandler*>(menu->getSpawningView()) : NULL;
+	return (spellcheck_handler) && (spellcheck_handler->canAddToIgnore());
+}
+
 bool enable_object_return()
 {
 	return (!LLSelectMgr::getInstance()->getSelection()->isEmpty() &&
@@ -5998,68 +6049,6 @@ class LLViewEnableLastChatter : public view_listener_t
 		return new_value;
 	}
 };
-
-// [SL:KB] - Patch: Misc-Spellcheck | Checked: 2010-12-19 (Catznip-2.5.0a) | Added: Catznip-2.5.0a
-void spellCheck_ReplaceWithSuggestion(LLUICtrl* pMenuItemCtrl, const LLSD& sdParam)
-{
-	LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	if ( (!pSpellCheckHandler) || (!pSpellCheckHandler->useSpellCheck()) )
-		return;
-
-	U32 idxSuggestion = 0;
-	if ( (!LLStringUtil::convertToU32(sdParam.asString(), idxSuggestion)) || (idxSuggestion >= pSpellCheckHandler->getSuggestionCount()) )
-		return;
-
-	pSpellCheckHandler->replaceWithSuggestion(idxSuggestion);
-}
-
-bool spellCheck_VisibleSuggestion(LLUICtrl* pMenuItemCtrl, const LLSD& sdParam)
-{
-	LLMenuItemGL* pMenuItem = dynamic_cast<LLMenuItemGL*>(pMenuItemCtrl);
-	const LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	const LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	if ( (!pSpellCheckHandler) || (!pSpellCheckHandler->useSpellCheck()) )
-		return false;
-
-	U32 idxSuggestion = 0;
-	if ( (!LLStringUtil::convertToU32(sdParam.asString(), idxSuggestion)) || (idxSuggestion >= pSpellCheckHandler->getSuggestionCount()) )
-		return false;
-
-	pMenuItem->setLabel(pSpellCheckHandler->getSuggestion(idxSuggestion));
-	return true;
-}
-
-void spellCheck_AddToDictionary(LLUICtrl* pMenuItemCtrl)
-{
-	LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	if ( (pSpellCheckHandler) && (pSpellCheckHandler->canAddToDictionary()) )
-		pSpellCheckHandler->addToDictionary();
-}
-
-bool spellCheck_EnableAddToDictionary(LLUICtrl* pMenuItemCtrl)
-{
-	const LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	const LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	return (pSpellCheckHandler) && (pSpellCheckHandler->canAddToDictionary());
-}
-
-void spellCheck_AddToIgnore(LLUICtrl* pMenuItemCtrl)
-{
-	LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	if ( (pSpellCheckHandler) && (pSpellCheckHandler->canAddToIgnore()) )
-		pSpellCheckHandler->addToIgnore();
-}
-
-bool spellCheck_EnableAddToIgnore(LLUICtrl* pMenuItemCtrl)
-{
-	const LLContextMenu* pMenu = dynamic_cast<LLContextMenu*>(pMenuItemCtrl->getParent());
-	const LLSpellCheckMenuHandler* pSpellCheckHandler = (pMenu) ? dynamic_cast<LLSpellCheckMenuHandler*>(pMenu->getSpawningView()) : NULL;
-	return (pSpellCheckHandler) && (pSpellCheckHandler->canAddToIgnore());
-}
-// [/SL:KB]
 
 class LLEditEnableDeselect : public view_listener_t
 {
@@ -6318,6 +6307,14 @@ void show_v1_menus()	// V1 menu system	-WoLf
 // }
 //
 
+class LLCommunicateBlockList : public view_listener_t
+{
+	bool handleEvent(const LLSD& userdata)
+	{
+		LLFloaterSidePanelContainer::showPanel("people", "panel_block_list_sidetray", LLSD());
+		return true;
+	}
+};
 
 class LLWorldSetHomeLocation : public view_listener_t
 {
@@ -8024,15 +8021,6 @@ void handle_test_female(void*)
 	//gGestureList.requestResetFromServer( FALSE );
 }
 
-void handle_toggle_pg(void*)
-{
-	gAgent.setTeen( !gAgent.isTeen() );
-
-	LLFloaterWorldMap::reloadIcons(NULL);
-
-	llinfos << "PG status set to " << (S32)gAgent.isTeen() << llendl;
-}
-
 void handle_dump_attachments(void*)
 {
 	if(!isAgentAvatarValid()) return;
@@ -8085,6 +8073,18 @@ class LLCheckControl : public view_listener_t
 		return new_value;
 	}
 };
+
+// <FS:Ansariel> Reset to default control
+class FSResetControl : public view_listener_t
+{
+	bool handleEvent( const LLSD& userdata)
+	{
+		std::string callback_data = userdata.asString();
+		gSavedSettings.getControl(callback_data)->resetToDefault(true);
+		return true;
+	}
+};
+// </FS:Ansariel> Reset to default control
 
 // not so generic
 
@@ -8471,6 +8471,20 @@ BOOL check_show_xui_names(void *)
 {
 	return gSavedSettings.getBOOL("DebugShowXUINames");
 }
+
+// <FS:Ansariel> FIRE-304: Option to exclude group owned objects
+class FSToolSelectIncludeGroupOwned : public view_listener_t
+{
+	bool handleEvent(const LLSD& userdata)
+	{
+		BOOL cur_val = gSavedSettings.getBOOL("FSSelectIncludeGroupOwned");
+
+		gSavedSettings.setBOOL("FSSelectIncludeGroupOwned", ! cur_val );
+
+		return true;
+	}
+};
+// </FS:Ansariel>
 
 class LLToolsSelectOnlyMyObjects : public view_listener_t
 {
@@ -9586,18 +9600,6 @@ void handle_rebake_region()
 //         pick up the menu properly.
 void initialize_edit_menu()
 {
-// [SL:KB] - Patch: Misc-Spellcheck | Checked: 2010-12-19 (Catznip-2.5.0a) | Added: Catznip-2.5.0a
-	LLUICtrl::CommitCallbackRegistry::Registrar& commit = LLUICtrl::CommitCallbackRegistry::currentRegistrar();
-	LLUICtrl::EnableCallbackRegistry::Registrar& enable = LLUICtrl::EnableCallbackRegistry::currentRegistrar();
-
-	commit.add("SpellCheck.ReplaceWithSuggestion", boost::bind(&spellCheck_ReplaceWithSuggestion, _1, _2));
-	enable.add("SpellCheck.VisibleSuggestion", boost::bind(&spellCheck_VisibleSuggestion, _1, _2));
-	commit.add("SpellCheck.AddToDictionary", boost::bind(&spellCheck_AddToDictionary, _1));
-	enable.add("SpellCheck.EnableAddToDictionary", boost::bind(&spellCheck_EnableAddToDictionary, _1));
-	commit.add("SpellCheck.AddToIgnore", boost::bind(&spellCheck_AddToIgnore, _1));
-	enable.add("SpellCheck.EnableAddToIgnore", boost::bind(&spellCheck_EnableAddToIgnore, _1));
-// [/SL:KB]
-
 	view_listener_t::addMenu(new LLEditUndo(), "Edit.Undo");
 	view_listener_t::addMenu(new LLEditRedo(), "Edit.Redo");
 	view_listener_t::addMenu(new LLEditCut(), "Edit.Cut");
@@ -9618,6 +9620,19 @@ void initialize_edit_menu()
 	view_listener_t::addMenu(new LLEditEnableDeselect(), "Edit.EnableDeselect");
 	view_listener_t::addMenu(new LLEditEnableDuplicate(), "Edit.EnableDuplicate");
 
+}
+
+void initialize_spellcheck_menu()
+{
+	LLUICtrl::CommitCallbackRegistry::Registrar& commit = LLUICtrl::CommitCallbackRegistry::currentRegistrar();
+	LLUICtrl::EnableCallbackRegistry::Registrar& enable = LLUICtrl::EnableCallbackRegistry::currentRegistrar();
+
+	commit.add("SpellCheck.ReplaceWithSuggestion", boost::bind(&handle_spellcheck_replace_with_suggestion, _1, _2));
+	enable.add("SpellCheck.VisibleSuggestion", boost::bind(&visible_spellcheck_suggestion, _1, _2));
+	commit.add("SpellCheck.AddToDictionary", boost::bind(&handle_spellcheck_add_to_dictionary, _1));
+	enable.add("SpellCheck.EnableAddToDictionary", boost::bind(&enable_spellcheck_add_to_dictionary, _1));
+	commit.add("SpellCheck.AddToIgnore", boost::bind(&handle_spellcheck_add_to_ignore, _1));
+	enable.add("SpellCheck.EnableAddToIgnore", boost::bind(&enable_spellcheck_add_to_ignore, _1));
 }
 
 void initialize_menus()
@@ -9707,6 +9722,9 @@ void initialize_menus()
 	// Me > Movement
 	view_listener_t::addMenu(new LLAdvancedAgentFlyingInfo(), "Agent.getFlying");
 	
+	// Communicate
+	view_listener_t::addMenu(new LLCommunicateBlockList(), "Communicate.BlockList");
+	
 	// World menu
 	view_listener_t::addMenu(new LLWorldAlwaysRun(), "World.AlwaysRun");
 	view_listener_t::addMenu(new LLWorldCreateLandmark(), "World.CreateLandmark");
@@ -9760,6 +9778,8 @@ void initialize_menus()
 	view_listener_t::addMenu(new LLToolsSaveToInventory(), "Tools.SaveToInventory");
 	view_listener_t::addMenu(new LLToolsSaveToObjectInventory(), "Tools.SaveToObjectInventory");
 	view_listener_t::addMenu(new LLToolsSelectedScriptAction(), "Tools.SelectedScriptAction");
+	// <FS:Ansariel> FIRE-304: Option to exclude group owned objects
+	view_listener_t::addMenu(new FSToolSelectIncludeGroupOwned(), "Tools.SelectIncludeGroupOwned");
 
 	view_listener_t::addMenu(new LLToolsEnableToolNotPie(), "Tools.EnableToolNotPie");
 	view_listener_t::addMenu(new LLToolsEnableSelectNextPart(), "Tools.EnableSelectNextPart");
@@ -9881,7 +9901,6 @@ void initialize_menus()
 
 	view_listener_t::addMenu(new LLAdvancedTestMale(), "Advanced.TestMale");
 	view_listener_t::addMenu(new LLAdvancedTestFemale(), "Advanced.TestFemale");
-	view_listener_t::addMenu(new LLAdvancedTogglePG(), "Advanced.TogglePG");
 	
 	// Advanced > Character (toplevel)
 	view_listener_t::addMenu(new LLAdvancedForceParamsToDefault(), "Advanced.ForceParamsToDefault");
@@ -10087,6 +10106,10 @@ void initialize_menus()
 	view_listener_t::addMenu(new LLGoToObject(), "GoToObject");
 	commit.add("PayObject", boost::bind(&handle_give_money_dialog));
 
+	// <FS:Ansariel> Reset to default control
+	view_listener_t::addMenu(new FSResetControl(), "ResetControl");
+	// </FS:Ansariel> Reset to default control
+
 	// <FS:Ansariel> Commented out - already definied earlier in this method
 	//commit.add("Inventory.NewWindow", boost::bind(&LLFloaterInventory::showAgentInventory));
 
@@ -10126,4 +10149,9 @@ void initialize_menus()
 	commit.add("World.RebakeRegion", boost::bind(&handle_rebake_region));
 	enable.add("World.RebakeRegion", boost::bind(&enable_rebake_region));
 	// </FS:Zi>
+
+	// <FS:Ansariel> FIRE-7758: Save/load camera position
+	commit.add("Camera.StoreView", boost::bind(&LLAgentCamera::storeCameraPosition, &gAgentCamera));
+	commit.add("Camera.LoadView", boost::bind(&LLAgentCamera::loadCameraPosition, &gAgentCamera));
+	// </FS:Ansariel>
 }

@@ -129,6 +129,19 @@ void make_ui_sound(const char* namep)
 		}
 		else if (LLUI::sAudioCallback != NULL)
 		{
+			// <FS:PP> Silencer for FIRE-7556: Configurable User Interface sounds
+			if(name == "UISndNewIncomingIMSession" || name == "UISndNewIncomingGroupIMSession")
+			{
+				if (!LLUI::sSettingGroups["config"]->getU32("PlayMode"+name)) // The only ones U32 - 0, 1 or 2 value
+					return;
+			}
+			else
+			{
+				if (!LLUI::sSettingGroups["config"]->getBOOL("PlayMode"+name))
+					return;
+			}
+			// </FS:PP>
+			
 			if (LLUI::sSettingGroups["config"]->getBOOL("UISndDebugSpamToggle"))
 			{
 				llinfos << "UI sound name: " << name << llendl;	
@@ -832,7 +845,11 @@ void gl_stippled_line_3d( const LLVector3& start, const LLVector3& end, const LL
 
 	gGL.flush();
 	glLineWidth(2.5f);
-	glLineStipple(2, 0x3333 << shift);
+
+	if (!LLGLSLShader::sNoFixedFunction)
+	{
+		glLineStipple(2, 0x3333 << shift);
+	}
 
 	gGL.begin(LLRender::LINES);
 	{

@@ -303,6 +303,7 @@ BOOL	LLPanelObject::postBuild()
 		mCtrlSculptTexture->setDropCallback( boost::bind(&LLPanelObject::onDropSculpt, this, _2 ));
 		// Don't allow (no copy) or (no transfer) textures to be selected during immediate mode
 		mCtrlSculptTexture->setImmediateFilterPermMask(PERM_COPY | PERM_TRANSFER);
+		mCtrlSculptTexture->setDnDFilterPermMask(PERM_COPY | PERM_TRANSFER);
 		// Allow any texture to be used during non-immediate mode.
 		mCtrlSculptTexture->setNonImmediateFilterPermMask(PERM_NONE);
 		LLAggregatePermissions texture_perms;
@@ -2478,17 +2479,38 @@ BOOL get_vector_from_clipboard(LLVector3* value)
 void LLPanelObject::onPastePosClip(const LLSD& data)
 {
 	if(get_vector_from_clipboard(&mClipboardPos))
+	{
+		mHasPosClipboard = TRUE;
 		onPastePos(data);
+	}
+	else
+	{
+		llinfos << "Couldn't get position vector from clipboard" << llendl;
+	}
 }
 void LLPanelObject::onPasteSizeClip(const LLSD& data)
 {
 	if(get_vector_from_clipboard(&mClipboardSize))
+	{
+		mHasSizeClipboard = TRUE;
 		onPasteSize(data);
+	}
+	else
+	{
+		llinfos << "Couldn't get size vector from clipboard" << llendl;
+	}
 }
 void LLPanelObject::onPasteRotClip(const LLSD& data)
 {
 	if(get_vector_from_clipboard(&mClipboardRot))
+	{
+		mHasRotClipboard = TRUE;
 		onPasteRot(data);
+	}
+	else
+	{
+		llinfos << "Couldn't get rotation vector from clipboard" << llendl;
+	}
 }
 
 

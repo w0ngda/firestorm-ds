@@ -57,8 +57,8 @@
 #include "llviewerstats.h"
 
 bool LLTextureFetchDebugger::sDebuggerEnabled = false ;
-LLStat LLTextureFetch::sCacheHitRate("texture_cache_hits", 128);
-LLStat LLTextureFetch::sCacheReadLatency("texture_cache_read_latency", 128);
+LLStat LLTextureFetch::sCacheHitRate("texture_cache_hits", 32);
+LLStat LLTextureFetch::sCacheReadLatency("texture_cache_read_latency", 32);
 
 
 #include "fswsassetblacklist.h"
@@ -1312,7 +1312,7 @@ bool LLTextureFetchWorker::doWork(S32 param)
 					++mHTTPFailCount;
 					llinfos << "HTTP GET failed for: " << mUrl
 							<< " Status: " << mGetStatus << " Reason: '" << mGetReason << "'"
-							<< " Attempt:" << mHTTPFailCount+1 << "/" << max_attempts << llendl;
+							<< " Attempt:" << mHTTPFailCount << "/" << max_attempts << llendl;
 				}
 
 				if (mHTTPFailCount >= max_attempts)

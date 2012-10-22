@@ -94,7 +94,7 @@ extern LLPipeline	gPipeline;
 U32						LLViewerObjectList::sSimulatorMachineIndex = 1; // Not zero deliberately, to speed up index check.
 std::map<U64, U32>		LLViewerObjectList::sIPAndPortToIndex;
 std::map<U64, LLUUID>	LLViewerObjectList::sIndexAndLocalIDToUUID;
-LLStat					LLViewerObjectList::sCacheHitRate("object_cache_hits", 128);
+LLStat					LLViewerObjectList::sCacheHitRate("object_cache_hits", 32);
 
 LLViewerObjectList::LLViewerObjectList()
 {
@@ -881,12 +881,28 @@ void LLViewerObjectList::update(LLAgent &agent, LLWorld &world)
 {
 	LLMemType mt(LLMemType::MTYPE_OBJECT);
 
+	// <FS:Ansariel> Speed up debug settings
+	static LLCachedControl<bool> velocityInterpolate(gSavedSettings, "VelocityInterpolate");
+	static LLCachedControl<bool> pingInterpolate(gSavedSettings, "PingInterpolate");
+	static LLCachedControl<F32> interpolationTime(gSavedSettings, "InterpolationTime");
+	static LLCachedControl<F32> interpolationPhaseOut(gSavedSettings, "InterpolationPhaseOut");
+	static LLCachedControl<bool> animateTextures(gSavedSettings, "AnimateTextures");
+	static LLCachedControl<bool> freezeTime(gSavedSettings, "FreezeTime");
+	// </FS:Ansariel> Speed up debug settings
+
 	// Update globals
-	LLViewerObject::setVelocityInterpolate( gSavedSettings.getBOOL("VelocityInterpolate") );
-	LLViewerObject::setPingInterpolate( gSavedSettings.getBOOL("PingInterpolate") );
+	// </FS:Ansariel> Speed up debug settings
+	//LLViewerObject::setVelocityInterpolate( gSavedSettings.getBOOL("VelocityInterpolate") );
+	//LLViewerObject::setPingInterpolate( gSavedSettings.getBOOL("PingInterpolate") );
+	//
+	//F32 interp_time = gSavedSettings.getF32("InterpolationTime");
+	//F32 phase_out_time = gSavedSettings.getF32("InterpolationPhaseOut");
+	LLViewerObject::setVelocityInterpolate(velocityInterpolate);
+	LLViewerObject::setPingInterpolate(pingInterpolate);
 	
-	F32 interp_time = gSavedSettings.getF32("InterpolationTime");
-	F32 phase_out_time = gSavedSettings.getF32("InterpolationPhaseOut");
+	F32 interp_time = (F32)interpolationTime;
+	F32 phase_out_time = (F32)interpolationPhaseOut;
+	// </FS:Ansariel> Speed up debug settings
 	if (interp_time < 0.0 || 
 		phase_out_time < 0.0 ||
 		phase_out_time > interp_time)
@@ -898,7 +914,10 @@ void LLViewerObjectList::update(LLAgent &agent, LLWorld &world)
 	LLViewerObject::setPhaseOutUpdateInterpolationTime( interp_time );
 	LLViewerObject::setMaxUpdateInterpolationTime( phase_out_time );
 
-	gAnimateTextures = gSavedSettings.getBOOL("AnimateTextures");
+	// <FS:Ansariel> Speed up debug settings
+	//gAnimateTextures = gSavedSettings.getBOOL("AnimateTextures");
+	gAnimateTextures = animateTextures;
+	// </FS:Ansariel> Speed up debug settings
 
 	// update global timer
 	F32 last_time = gFrameTimeSeconds;
@@ -951,7 +970,10 @@ void LLViewerObjectList::update(LLAgent &agent, LLWorld &world)
 		}
 	}
 
-	if (gSavedSettings.getBOOL("FreezeTime"))
+	// <FS:Ansariel> Speed up debug settings
+	//if (gSavedSettings.getBOOL("FreezeTime"))
+	if (freezeTime)
+	// </FS:Ansariel> Speed up debug settings
 	{
 		for (std::vector<LLViewerObject*>::iterator iter = idle_list.begin();
 			iter != idle_list.end(); iter++)
@@ -1727,7 +1749,10 @@ void LLViewerObjectList::generatePickList(LLCamera &camera)
 			LLViewerObject* last_objectp = NULL;
 			for (S32 face_num = 0; face_num < drawablep->getNumFaces(); face_num++)
 			{
-				LLViewerObject* objectp = drawablep->getFace(face_num)->getViewerObject();
+				LLFace * facep = drawablep->getFace(face_num);
+				if (!facep) continue;
+
+				LLViewerObject* objectp = facep->getViewerObject();
 
 				if (objectp && objectp != last_objectp)
 				{

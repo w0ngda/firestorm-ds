@@ -38,10 +38,25 @@
 #include "lltimectrl.h"
 #include "llenvmanager.h"
 #include "llviewercontrol.h"
+#include "lldrawpoolbump.h"
+#include "llviewertexturelist.h"
+
+// Ansariel: Copied from llviewercontrol.cpp, handleSetShaderChanged()
+static void handleShaderChanged()
+{
+	// changing shader level may invalidate existing cached bump maps, as the shader type determines the format of the bump map it expects - clear and repopulate the bump cache
+	gBumpImageList.destroyGL();
+	gBumpImageList.restoreGL();
+
+	// else, leave terrain detail as is
+	LLViewerShaderMgr::instance()->setShaders();
+}
 
 FloaterQuickPrefs::FloaterQuickPrefs(const LLSD& key)
-:	LLTransientDockableFloater(NULL,true,key)
+:	LLTransientDockableFloater(NULL, true, key)
 {
+	// For Phototools
+	mCommitCallbackRegistrar.add("Quickprefs.ShaderChanged", boost::bind(&handleShaderChanged));
 }
 
 FloaterQuickPrefs::~FloaterQuickPrefs()
@@ -53,7 +68,8 @@ void FloaterQuickPrefs::onOpen(const LLSD& key)
 }
 
 
-void FloaterQuickPrefs::initCallbacks(void) {
+void FloaterQuickPrefs::initCallbacks(void)
+{
 	LLWLParamManager& param_mgr = LLWLParamManager::instance();
 	getChild<LLUICtrl>("WaterPresetsCombo")->setCommitCallback(boost::bind(&FloaterQuickPrefs::onChangeWaterPreset, this, _1));
 	getChild<LLUICtrl>("WLPresetsCombo")->setCommitCallback(boost::bind(&FloaterQuickPrefs::onChangeSkyPreset, this, _1));
@@ -164,8 +180,15 @@ void FloaterQuickPrefs::onClickWaterPrev()
 	// find place of current param
 	std::map<std::string, LLWaterParamSet>::iterator mIt = param_list.find(currentParams.mName);
 
+	// shouldn't happen unless you delete every preset but Default
+	if (mIt == param_list.end())
+	{
+		llwarns << "No more presets left!" << llendl;
+		return;
+	}
+
 	// if at the beginning, loop
-	if(mIt == param_list.begin()) 
+	if (mIt == param_list.begin()) 
 	{
 		std::map<std::string, LLWaterParamSet>::iterator last = param_list.end();
 		last--;
@@ -193,10 +216,17 @@ void FloaterQuickPrefs::onClickWaterNext()
 	// find place of current param
 	std::map<std::string, LLWaterParamSet>::iterator mIt = param_list.find(currentParams.mName);
 
+	// shouldn't happen unless you delete every preset but Default
+	if (mIt == param_list.end())
+	{
+		llwarns << "No more presets left!" << llendl;
+		return;
+	}
+
 	// if at the end, loop
 	std::map<std::string, LLWaterParamSet>::iterator last = param_list.end();
 	last--;
-	if(mIt == param_list.end()) 
+	if (mIt == last) 
 	{
 		mIt = param_list.begin();
 	}

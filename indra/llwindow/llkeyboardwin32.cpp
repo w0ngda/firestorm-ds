@@ -74,10 +74,11 @@ LLKeyboardWin32::LLKeyboardWin32()
 	mTranslateKeyMap[VK_OEM_COMMA]  = ',';
 	mTranslateKeyMap[VK_OEM_MINUS]  = '-';
 	mTranslateKeyMap[VK_OEM_PERIOD] = '.';
-	// Ansariel: Reverted back. This allows easy starting gestures in chat.
-	//           Shared Media prims borkage is worked around in llviewerkeyboard.cpp,
-	//           start_gesture( EKeystate s )
-	mTranslateKeyMap[VK_OEM_2] = KEY_PAD_DIVIDE; //'/';//This used to be KEY_PAD_DIVIDE, but that breaks typing into text fields in media prims
+	// <FS:Ansariel> Reverted back and changed to KEY_DIVIDE. This allows easy starting
+	//               gestures in chat.
+	//               Shared Media prims borkage is worked around in llviewerkeyboard.cpp,
+	//               start_gesture( EKeystate s )
+	mTranslateKeyMap[VK_OEM_2] = KEY_DIVIDE; //'/';//This used to be KEY_PAD_DIVIDE, but that breaks typing into text fields in media prims
 	mTranslateKeyMap[VK_OEM_3] = '`';
 	mTranslateKeyMap[VK_OEM_4] = '[';
 	mTranslateKeyMap[VK_OEM_5] = '\\';
@@ -302,69 +303,13 @@ void LLKeyboardWin32::scanKeyboard()
 
 BOOL LLKeyboardWin32::translateExtendedKey(const U16 os_key, const MASK mask, KEY *translated_key)
 {
-	if(mNumpadDistinct == ND_NUMLOCK_ON)
-	{
-		std::map<U16, KEY>::iterator iter = mTranslateNumpadMap.find(os_key);
-		if (iter != mTranslateNumpadMap.end())
-		{
-			*translated_key = iter->second;
-			return TRUE;
-		}
-	}
-
-	BOOL success = translateKey(os_key, translated_key);
-	if(mNumpadDistinct != ND_NEVER) {
-		if(!success) return success;
-		if(mask & MASK_EXTENDED) 
-		{
-			// this is where we'd create new keycodes for extended keys
-			// the set of extended keys includes the 'normal' arrow keys and 
-			// the pgup/dn/insert/home/end/delete cluster above the arrow keys
-			// see http://windowssdk.msdn.microsoft.com/en-us/library/ms646280.aspx
-
-			// only process the return key if numlock is off
-			if(((mNumpadDistinct == ND_NUMLOCK_OFF && 
-				 !(GetKeyState(VK_NUMLOCK) & 1)) 
-				 || mNumpadDistinct == ND_NUMLOCK_ON) &&
-					*translated_key == KEY_RETURN) {
-					*translated_key = KEY_PAD_RETURN;
-			}
-		}
-		else 
-		{
-			// the non-extended keys, those are in the numpad
-			switch (*translated_key) 
-			{
-				case KEY_LEFT:
-					*translated_key = KEY_PAD_LEFT; break;
-				case KEY_RIGHT: 
-					*translated_key = KEY_PAD_RIGHT; break;
-				case KEY_UP: 
-					*translated_key = KEY_PAD_UP; break;
-				case KEY_DOWN:
-					*translated_key = KEY_PAD_DOWN; break;
-				case KEY_HOME:
-					*translated_key = KEY_PAD_HOME; break;
-				case KEY_END:
-					*translated_key = KEY_PAD_END; break;
-				case KEY_PAGE_UP:
-					*translated_key = KEY_PAD_PGUP; break;
-				case KEY_PAGE_DOWN:
-					*translated_key = KEY_PAD_PGDN; break;
-				case KEY_INSERT:
-					*translated_key = KEY_PAD_INS; break;
-				case KEY_DELETE:
-					*translated_key = KEY_PAD_DEL; break;
-			}
-		}
-	}
-	return success;
+	return translateKey(os_key, translated_key);
 }
 
 U16  LLKeyboardWin32::inverseTranslateExtendedKey(const KEY translated_key)
 {
 	// if numlock is on, then we need to translate KEY_PAD_FOO to the corresponding number pad number
-	if((mNumpadDistinct == ND_NUMLOCK_ON) && (GetKeyState(VK_NUMLOCK) & 1))
+	if(GetKeyState(VK_NUMLOCK) & 1)
 	{
 		std::map<KEY, U16>::iterator iter = mInvTranslateNumpadMap.find(translated_key);
 		if (iter != mInvTranslateNumpadMap.end())

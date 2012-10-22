@@ -191,6 +191,18 @@
          control_name="FSDisableAvatarTrackerAtCloseIn"
          tool_tip="If enabled, the tracking beacon will be disabled automatically, if the distance to the targeted avatar is less than 3m. (Default)"/>
 
+		<check_box
+		 control_name="EffectScriptChatParticles"
+		 height="16"
+		 label="Create particle effects when scripts communicate"
+		 layout="topleft"
+		 left="15"
+		 name="EffectScriptChatParticles"
+		 tool_tip="If enabled scripted objects display swirling particle lights when the scripts communicate"
+		 initial_value="true"
+		 top_pad="5"
+		 width="350" />
+
         <check_box
          top_pad="15"
          control_name="UseLSLBridge"
@@ -322,7 +334,7 @@
          height="18"
          left_pad="5"
          increment="1"
-         initial_val="5000"
+         initial_value="5000"
          max_val="10000"
          min_val="500"
          name="RenderVolumeSAFrameMax"
@@ -358,7 +370,7 @@
          height="18"
          left_pad="0"
          increment="1"
-         initial_val="70"
+         initial_value="70"
          max_val="1000"
          min_val="5"
          name="_NACL_AntiSpamNewlines"
@@ -385,7 +397,7 @@
          height="18"
          left_pad="0"
          increment="1"
-         initial_val="10"
+         initial_value="10"
          max_val="40"
          min_val="2"
          name="_NACL_AntiSpamAmount"
@@ -412,7 +424,7 @@
          height="18"
          left_pad="0"
          increment="1"
-         initial_val="10"
+         initial_value="10"
          max_val="25"
          min_val="1"
          name="_NACL_AntiSpamSoundMulti"
@@ -439,7 +451,7 @@
          height="18"
          left_pad="0"
          increment="1"
-         initial_val="4"
+         initial_value="4"
          max_val="25"
          min_val="1"
          name="_NACL_AntiSpamSoundPreloadMulti"
@@ -484,14 +496,13 @@
          follows="left|top"
          height="18"
          increment="1"
-         initial_val="5"
+         initial_value="5"
          label="Incoming object offers throttle threshold:"
          label_width="225"
          max_val="20"
          min_val="1"
          show_text="true"
          width="350"
-         auto_resize="false"
          tool_tip="Sets the threshold of incoming object offers within 10 seconds before they get throttled. Default 5" />
 	</panel>
 
@@ -681,14 +692,13 @@
          follows="left|top"
          height="18"
          increment="1"
-         initial_val="4"
+         initial_value="4"
          label="Beam updates/sec:"
          label_width="100"
          max_val="200"
          min_val="4"
          show_text="true"
          width="250"
-         auto_resize="false"
          tool_tip="How many beam updates to send in a second. Default 40" />
 
         <check_box
@@ -791,14 +801,13 @@
          follows="left|top"
          height="18"
          increment="0.1"
-         initial_val="1"
+         initial_value="1"
          label="Scale:"
          label_width="35"
          max_val="4"
          min_val="0.1"
          show_text="true"
          width="150"
-         auto_resize="false"
          tool_tip="Change the scale of the shape used for the Phoenix Shaped Beam" />
 
     </panel>
@@ -835,28 +844,10 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineCalc"
       tool_tip=""
       control_name="FSCmdLineCalc"
-      width="200"/>
-    <!--autocorrect-->
-    <text
-      top_pad="5"
-      follows="left|top"
-      height="16"
-      name="FSCmdLineAutocorrect_txt"
-      width="250">
-      Add autocorrect word(cmd list|bad|good)
-    </text>
-    <line_editor
-      top_pad="0"
-      follows="left|top"
-      height="20"
-      max_length="256"
-      name="FSCmdLineAutocorrect"
-      tool_tip=""
-      control_name="FSCmdLineAutocorrect"
       width="200"/>
     <!--drawdistance-->
     <text
@@ -871,7 +862,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineDrawDistance"
       tool_tip=""
       control_name="FSCmdLineDrawDistance"
@@ -889,7 +880,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineBandWidth"
       tool_tip=""
       control_name="FSCmdLineBandWidth"
@@ -907,7 +898,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineRezPlatform"
       tool_tip=""
       control_name="FSCmdLineRezPlatform"
@@ -920,14 +911,13 @@
       follows="left|top"
       height="18"
       increment="0.5"
-      initial_val="5"
+      initial_value="5"
       label="Width"
       label_width="30"
       max_val="30"
       min_val="5"
       show_text="true"
       width="200"
-      auto_resize="false"
       tool_tip="How big do you want the platform to appear to be?"/>
 
     <view_border
@@ -953,7 +943,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineKeyToName"
       tool_tip=""
       control_name="FSCmdLineKeyToName"
@@ -971,7 +961,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineAO"
       tool_tip=""
       control_name="FSCmdLineAO"
@@ -989,7 +979,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       tool_tip="Clears the Chat History to prevent lag effects from chat spammers."
       name="FSCmdLineClearChat"
       control_name="FSCmdLineClearChat"
@@ -1007,7 +997,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       tool_tip="Sets and plays your media stream to the entered url"
       name="FSCmdLineMedia"
       control_name="FSCmdLineMedia"
@@ -1026,7 +1016,7 @@
       enabled="false"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       tool_tip="sets and plays your music stream to the entered url"
       name="FSCmdLineMusic"
       control_name="FSCmdLineMusic"
@@ -1066,7 +1056,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLinePos"
       tool_tip=""
       control_name="FSCmdLinePos"
@@ -1084,7 +1074,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineGround"
       tool_tip=""
       control_name="FSCmdLineGround"
@@ -1102,7 +1092,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineHeight"
       tool_tip=""
       control_name="FSCmdLineHeight"
@@ -1120,7 +1110,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineMapTo"
       tool_tip=""
       control_name="FSCmdLineMapTo"
@@ -1157,7 +1147,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdTeleportToCam"
       tool_tip=""
       control_name="FSCmdTeleportToCam"
@@ -1175,7 +1165,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineOfferTp"
       tool_tip=""
       control_name="FSCmdLineOfferTp"
@@ -1193,7 +1183,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       tool_tip="The syntax of this command allows partial names and is not case sensitive. Better results if used while the Radar is open."
       name="FSCmdLineTP2"
       control_name="FSCmdLineTP2"
@@ -1211,7 +1201,7 @@
       top_pad="0"
       follows="left|top"
       height="20"
-      max_length="256"
+      max_length_chars="256"
       name="FSCmdLineTeleportHome"
       tool_tip=""
       control_name="FSCmdLineTeleportHome"
@@ -1332,7 +1322,7 @@
          height="18"
          left_pad="0"
          increment="0.1"
-         initial_val="3.0"
+         initial_value="3.0"
          max_val="60"
          min_val="0.1"
          name="FSWindlightInterpolateTime"
@@ -1436,7 +1426,7 @@
         </combo_box>
 
         <text
-         top="110"
+         top="100"
          left="10"
          follows="left|top"
          height="10"
@@ -1512,13 +1502,21 @@
          control_name="FSBuildPrefs_PivotIsPercent"/>
 
         <check_box
-         top_pad="20"
+         top_pad="15"
          follows="left|top"
          height="16"
          label="Enable highlighting of selected prims"
          tool_tip="When unchecked, the yellow/blue outline effects are not rendered, improving performance when large numbers of prims are selected."
          name="EmBuildPrefsRenderHighlight_toggle"
          control_name="RenderHighlightSelections"/>
+		 
+        <check_box
+         follows="left|top"
+         height="16"
+         label="Use Ctrl+mouse to grab and manipulate objects"
+         tool_tip="When checked, you will be able to grab and move objects with your mouse and CTRL key."
+         name="FSEnableGrab"
+         control_name="EnableGrab"/>
 
         <check_box
          follows="left|top"
@@ -1602,7 +1600,7 @@
 	 font="SansSerif"
 	 height="23"
 	 enabled_control="_NACL_PreProcEnableHDDInclude"
-	 max_length="4096"
+	 max_length_chars="4096"
 	 name="preprocinclude_location"
 	 width="310" />
 	<button
@@ -1918,14 +1916,13 @@
          follows="left|top"
          height="18"
          increment="1"
-         initial_val="0"
+         initial_value="0"
          label="Z-offset correction:"
          label_width="110"
          max_val="5"
          min_val="-5"
          show_text="true"
          width="250"
-         auto_resize="false"
          tool_tip="Changes the Z-offset for avatar name tags. Default 0" />
 
     </panel>

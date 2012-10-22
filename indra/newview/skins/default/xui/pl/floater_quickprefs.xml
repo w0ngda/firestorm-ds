@@ -28,17 +28,23 @@
         <text name="name_tags_textbox">
             Tagi imion:
         </text>
-        <text name="LookAt_Preferences_Label">
+        <text name="lookat_textbox">
             Cele spojrzeń:
         </text>
-        <check_box name="showlookat" label="Włącz" tool_tip="Włącz celowniczki pokazujące gdzie patrzą inne osoby."/>
-        <text name="DebugShowColor_label">
-            Kolor pod kursorem:
+        <radio_group name="showlookat">
+            <radio_item label="Włącz" name="radio"/>
+            <radio_item label="Wyłącz" name="radio2"/>
+        </radio_group>
+        <text name="ShowColor_QP_Label">
+            Kolor spod kursora:
         </text>
-        <check_box name="Show_Color_Under_Cursor" label="Włączony" tool_tip="Pokazuj kolor pod kursorem myszki."/>
+        <radio_group name="Show_Color_Under_Cursor">
+            <radio_item label="Włącz" name="radio5"/>
+            <radio_item label="Wyłącz" name="radio6"/>
+        </radio_group>
         <radio_group name="Name_Tag_Preference">
-         <radio_item label="Włącz" name="radio"/>
-         <radio_item label="Wyłącz" name="radio2"/>
+            <radio_item label="Włącz" name="radio"/>
+            <radio_item label="Wyłącz" name="radio2"/>
         </radio_group>
         <text name="WL Sky" tool_tip="Ustawienia systemu Windlight dla Twojego nieba">
             Niebo WL:
@@ -47,6 +53,6 @@
             Woda WL:
         </text>
         <icon name="SkyDayCycle" tool_tip="Zmień porę dnia"/>
-        <button name="UseRegionWL" tool_tip="Resetuj opcje systemu WindLight do domyślnych regionu"/>
+        <button name="UseRegionWL" tool_tip="Resetuj opcje systemu Windlight do domyślnych regionu"/>
 </panel>
 </floater>

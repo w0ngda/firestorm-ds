@@ -46,12 +46,16 @@ include(VisualLeakDetector)
 include(GLOD)
 include(CMakeCopyIfDifferent)
 include(Growl)
+include(ColladaDom)
 
 # <FS:ND> if using ndPhysicsstub this variable will be unset, we don't need to build any stub code viewer side in that case
 if( LLPHYSICSEXTENSIONS_SRC_DIR )
 # </FS:ND>
 
-  add_subdirectory(${LLPHYSICSEXTENSIONS_SRC_DIR} llphysicsextensions)
+if (NOT HAVOK_TPV)
+   # When using HAVOK_TPV, the library is precompiled, so no need for this
+   add_subdirectory(${LLPHYSICSEXTENSIONS_SRC_DIR} llphysicsextensions)
+endif (NOT HAVOK_TPV)
 
 # <FS:ND>
 endif( LLPHYSICSEXTENSIONS_SRC_DIR )
@@ -82,55 +86,56 @@ include_directories(
     ${LSCRIPT_INCLUDE_DIRS}
     ${LSCRIPT_INCLUDE_DIRS}/lscript_compile
     ${LLLOGIN_INCLUDE_DIRS}
-    ${LIBS_PREBUILD_DIR}/include/hunspell
-    ${LIBS_PREBUILT_DIR}/include/collada
     ${UPDATER_INCLUDE_DIRS}
+    ${LIBS_PREBUILT_DIR}/include/collada
+    ${LIBS_PREBUILD_DIR}/include/hunspell
     ${OPENAL_LIB_INCLUDE_DIRS}
     ${LIBS_PREBUILT_DIR}/include/collada/1.4
     ${GROWL_INCLUDE_DIRS}
     ${TEAPOT_INCLUDE_DIRS}# <FS:AW opensim currency support>
     ${CMAKE_BINARY_DIR}/newview #<FS:TS> Flickr upload
+    ${COLLADA_INCLUDE_DIRS}
     )
 
 set(viewer_SOURCE_FILES
 # <Add FS includes below this line>
-    groupchatlistener.cpp
     ao.cpp
     aoengine.cpp
     aoset.cpp
     chatbar_as_cmdline.cpp
-    kcwlinterface.cpp
+    exoflickr.cpp
+    exoflickrauth.cpp
     exogroupmutelist.cpp
+    exopanelsnapshotflickr.cpp 
     floatermedialists.cpp
-    fscontactsfloater.cpp
     fsareasearch.cpp
-    fswsassetblacklist.cpp
-    fsfloaterwsassetblacklist.cpp
-    fsmoneytracker.cpp
+    fscontactsfloater.cpp
     fsdata.cpp
+    fsfloaterprofile.cpp
+    fsfloaterwsassetblacklist.cpp
     fsgrouptitles.cpp
     fskeywords.cpp
     fslslbridge.cpp
     fslslbridgerequest.cpp
-	fslslpreproc.cpp
-    fsslurlcommand.cpp
-    fsfloaterprofile.cpp
+    fslslpreproc.cpp
+    fsmoneytracker.cpp
+    fsnearbychatvoicemonitor.cpp
+    fspanelclassified.cpp
+    fspanelprefs.cpp
     fspanelprofile.cpp
+    fspanelprofileclassifieds.cpp
     fsradarlistctrl.cpp
-	#growlmanager.cpp
-    lggautocorrect.cpp
-    lggautocorrectfloater.cpp
+    fsslurlcommand.cpp
+    fswsassetblacklist.cpp
+    groupchatlistener.cpp
+    #growlmanager.cpp
+    kcwlinterface.cpp
+    lggbeamcolormapfloater.cpp
     lggbeammapfloater.cpp
     lggbeammaps.cpp
     lggbeamscolors.cpp
-    lggbeamcolormapfloater.cpp
     lggcontactsets.cpp
     lggcontactsetsfloater.cpp
-    fspanelprofileclassifieds.cpp
-    fspanelclassified.cpp
-    exopanelsnapshotflickr.cpp 
-    exoflickr.cpp
-    exoflickrauth.cpp
 
     llaccountingcostmanager.cpp
     llagent.cpp
@@ -152,6 +157,7 @@ set(viewer_SOURCE_FILES
     llassetuploadresponders.cpp
     llattachmentsmgr.cpp
     llaudiosourcevo.cpp
+    llautoreplace.cpp
     llavataractions.cpp
     llavatariconctrl.cpp
     llavatarlist.cpp
@@ -222,6 +228,7 @@ set(viewer_SOURCE_FILES
     llfloaterabout.cpp
     llfloaterbvhpreview.cpp
     llfloaterauction.cpp
+    llfloaterautoreplacesettings.cpp
     llfloateravatar.cpp
     llfloateravatarpicker.cpp
     llfloateravatartextures.cpp
@@ -265,7 +272,6 @@ set(viewer_SOURCE_FILES
     llfloatermemleak.cpp
     llfloatermodelpreview.cpp
     llfloatermodeluploadbase.cpp
-    llfloatermodelwizard.cpp
     llfloaternamedesc.cpp
     llfloaternearbychat.cpp
     llfloaternotificationsconsole.cpp
@@ -293,6 +299,7 @@ set(viewer_SOURCE_FILES
     llfloatersidepanelcontainer.cpp
     llfloatersnapshot.cpp
     llfloatersounddevices.cpp
+    llfloaterspellchecksettings.cpp
     llfloatertelehub.cpp
     llfloatertestinspectors.cpp
     llfloatertestlistview.cpp
@@ -696,7 +703,6 @@ set(viewer_SOURCE_FILES
     llxmlrpclistener.cpp
     llxmlrpctransaction.cpp
     noise.cpp
-    fspanelprefs.cpp
     particleeditor.cpp
     piemenu.cpp
     pieseparator.cpp
@@ -739,45 +745,45 @@ set(viewer_HEADER_FILES
     ViewerInstall.cmake
 
 # <Add FS includes below this line>
-    groupchatlistener.h
     ao.h
     aoengine.h
     aoset.h
     chatbar_as_cmdline.h
-    kcwlinterface.h
+    exoflickr.h
+    exoflickrauth.h
     exogroupmutelist.h
     floatermedialists.h
-    fscontactsfloater.h
     fsareasearch.h
-    fswsassetblacklist.h
-    fsfloaterwsassetblacklist.h
-    fsmoneytracker.h
+    fscontactsfloater.h
     fsdata.h
+    fsfloaterprofile.h
+    fsfloaterwsassetblacklist.h
+    fsgridhandler.h
     fsgrouptitles.h
     fskeywords.h
     fslslbridge.h
     fslslbridgerequest.h
-	fslslpreproc.h
-    fsslurlcommand.h
-    fsfloaterprofile.h
-    fsgridhandler.h
+    fslslpreproc.h
+    fsmoneytracker.h
+    fsnearbychatvoicemonitor.h
+    fspanelclassified.h
+    fspanelprefs.h
     fspanelprofile.h
+    fspanelprofileclassifieds.h
     fsradarlistctrl.h
     fsslurl.h
-	#growlmanager.h
-	#growlnotifier.h
-    lggautocorrect.h
-    lggautocorrectfloater.h
+    fsslurlcommand.h
+    fswsassetblacklist.h
+    groupchatlistener.h
+    #growlmanager.h
+    #growlnotifier.h
+    kcwlinterface.h
+    lggbeamcolormapfloater.h
     lggbeammapfloater.h
     lggbeammaps.h
     lggbeamscolors.h
-    lggbeamcolormapfloater.h
     lggcontactsets.h
     lggcontactsetsfloater.h
-    fspanelprofileclassifieds.h
-    fspanelclassified.h
-    exoflickr.h
-    exoflickrauth.h
 
     llaccountingcostmanager.h
     llagent.h
@@ -800,6 +806,7 @@ set(viewer_HEADER_FILES
     llassetuploadresponders.h
     llattachmentsmgr.h
     llaudiosourcevo.h
+    llautoreplace.h
     llavataractions.h
     llavatariconctrl.h
     llavatarlist.h
@@ -870,6 +877,7 @@ set(viewer_HEADER_FILES
     llfloaterabout.h
     llfloaterbvhpreview.h
     llfloaterauction.h
+    llfloaterautoreplacesettings.h
     llfloateravatar.h
     llfloateravatarpicker.h
     llfloateravatartextures.h
@@ -913,7 +921,6 @@ set(viewer_HEADER_FILES
     llfloatermemleak.h
     llfloatermodelpreview.h
     llfloatermodeluploadbase.h
-    llfloatermodelwizard.h
     llfloaternamedesc.h
     llfloaternearbychat.h
     llfloaternotificationsconsole.h
@@ -941,6 +948,7 @@ set(viewer_HEADER_FILES
     llfloatersidepanelcontainer.h
     llfloatersnapshot.h
     llfloatersounddevices.h
+    llfloaterspellchecksettings.h
     llfloatertelehub.h
     llfloatertestinspectors.h
     llfloatertestlistview.h
@@ -1337,7 +1345,6 @@ set(viewer_HEADER_FILES
     llxmlrpctransaction.h
     macmain.h
     noise.h
-    fspanelprefs.h
     particleeditor.h
     piemenu.h
     pieseparator.h
@@ -1649,7 +1656,6 @@ set(viewer_APPSETTINGS_FILES
     app_settings/settings_phoenix.xml
     app_settings/settings_v3.xml
     app_settings/settings.xml
-    app_settings/settings_autocorrect.xml
     app_settings/settings_crash_behavior.xml
     app_settings/settings_files.xml
     app_settings/settings_per_account.xml

@@ -57,7 +57,7 @@
 #include "llrootview.h"
 #include "llspeakers.h"
 #include "llviewerchat.h"
-
+#include "llautoreplace.h"
 // [RLVa:KB] - Checked: 2010-04-09 (RLVa-1.2.0e)
 #include "rlvhandler.h"
 // [/RLVa:KB]
@@ -66,7 +66,6 @@
 #include "llavataractions.h"
 #include "llgroupactions.h"
 #include "llvoicechannel.h"
-
 //TL: for support group chat prefix
 #include "fsdata.h"
 #include "llversioninfo.h"
@@ -316,7 +315,8 @@ void LLIMFloater::sendMsg()
 			// TL: Allow user to send system info.
 			if(mDialog == IM_NOTHING_SPECIAL && utf8_text.find("/sysinfo") == 0)
 			{
-				utf8_text = FSData::getSystemInfo();
+				LLSD system_info = FSData::getSystemInfo();
+				utf8_text = system_info["Part1"].asString() + system_info["Part2"].asString();
 			}
 
 			// Truncate for transport
@@ -484,8 +484,11 @@ void LLIMFloater::onHistoryButtonClicked()
 // support sysinfo button -Zi
 void LLIMFloater::onSysinfoButtonClicked()
 {
+	LLSD system_info = FSData::getSystemInfo();
 	LLSD args;
-	args["SYSINFO"] = FSData::getSystemInfo();
+	args["SYSINFO"] = system_info["Part1"].asString() + system_info["Part2"].asString();
+	args["Part1"] = system_info["Part1"];
+	args["Part2"] = system_info["Part2"];
 	LLNotificationsUtil::add("SendSysinfoToIM",args,LLSD(),boost::bind(&LLIMFloater::onSendSysinfo,this,_1,_2));
 }
 
@@ -495,15 +498,18 @@ BOOL LLIMFloater::onSendSysinfo(const LLSD& notification, const LLSD& response)
 
 	if(option==0)
 	{
-		std::string text=notification["substitutions"]["SYSINFO"];
+		std::string part1 = notification["substitutions"]["Part1"];
+		std::string part2 = notification["substitutions"]["Part2"];
 		if (mSessionInitialized)
 		{
-			LLIMModel::sendMessage(text, mSessionID,mOtherParticipantUUID,mDialog);
+			LLIMModel::sendMessage(part1, mSessionID,mOtherParticipantUUID,mDialog);
+			LLIMModel::sendMessage(part2, mSessionID,mOtherParticipantUUID,mDialog);
 		}
 		else
 		{
 			//queue up the message to send once the session is initialized
-			mQueuedMsgsForInit.append(text);
+			mQueuedMsgsForInit.append(part1);
+			mQueuedMsgsForInit.append(part2);
 		}
 		return TRUE;
 	}
@@ -781,6 +787,8 @@ BOOL LLIMFloater::postBuild()
 	//</FS:TS> FIRE-5770
 	// enable line history support for instant message bar
 	mInputEditor->setEnableLineHistory(TRUE);
+	// *TODO Establish LineEditor with autoreplace callback
+	mInputEditor->setAutoreplaceCallback(boost::bind(&LLAutoReplace::autoreplaceCallback, LLAutoReplace::getInstance(), _1, _2));
 
 	LLFontGL* font = LLViewerChat::getChatFont();
 	mInputEditor->setFont(font);	
@@ -1793,3 +1801,10 @@ BOOL LLIMFloater::enableViewerVersionCallback(const LLSD& notification,const LLS
 	return result;
 }
 // </FS:Zi>
+
+// <FS:Ansariel> FIRE-3248: Disable add friend button on IM floater if friendship request accepted
+void LLIMFloater::setEnableAddFriendButton(BOOL enabled)
+{
+	getChild<LLButton>("add_friend_btn")->setEnabled(enabled);
+}
+// </FS:Ansariel>

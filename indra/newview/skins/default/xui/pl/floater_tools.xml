@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<floater name="toolbox floater" short_title="NARZĘDZIA BUDOWANIA">
+<floater name="toolbox floater" short_title="Narzędzia budowania">
 	<floater.string name="status_rotate">
 		Przeciągaj barwne pierścienie, by obracać obiekt
 	</floater.string>
@@ -388,11 +388,11 @@
 			<color_swatch name="colorswatch" tool_tip="Kliknij, aby wybrać kolor"/>
 			<texture_picker name="light texture control" tool_tip="Kliknij, aby wybrać obraz (efekt występuje tylko z aktywowanym opóźnionym renderowaniem)"/>
 			<spinner label="Natężenie" name="Light Intensity"/>
-			<spinner label="Pole widzenia" name="Light FOV"/>
+			<spinner label="Pole widz." name="Light FOV"/>
 			<spinner label="Zasięg" name="Light Radius"/>
 			<spinner label="Skupienie" name="Light Focus"/>
 			<spinner label="Obniż. siły" name="Light Falloff"/>
-			<spinner label="Nastrojowość" name="Light Ambiance"/>
+			<spinner label="Nastrój" name="Light Ambiance"/>
 			<text name="label physicsshapetype">
 				Typ kształtu Fizycznego:
 			</text>
@@ -501,6 +501,7 @@
 			<button label="Nowy skrypt" label_selected="Nowy skrypt" name="button new script"/>
 			<button label="Prawa" name="button permissions"/>
 			<button label="Odśwież" name="button refresh"/>
+			<button label="Resetuj skrypty" name="button reset scripts"/>
 		</panel>
 	</tab_container>
 	<panel name="land info panel">
